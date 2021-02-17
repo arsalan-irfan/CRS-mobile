@@ -9,6 +9,8 @@ import {
   Image,
   Alert,
 } from "react-native";
+import {connect} from 'react-redux'
+
 export const Login = ({navigation}) => {
  
   return (
