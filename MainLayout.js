@@ -2,17 +2,17 @@
 
 import * as React from "react";
 import { useEffect } from "react";
-import { View, Text, Image, ActivityIndicator } from "react-native";
+import { View, Text, Image, ActivityIndicator, AsyncStorage } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { Icon, SearchBar } from "react-native-elements";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { Login } from "./screens/Login";
+import Login from "./screens/Login";
 import { ForgetPassword } from "./screens/ForgetPassword";
 import * as SplashScreen from "expo-splash-screen";
 import CustomDrawerContent from "./screens/CustomDrawerContent";
-import { Register } from "./screens/Register";
+import Register from "./screens/Register";
 import { ChangePassword } from "./screens/ChangePassword";
 import { Home } from "./screens/Home";
 import { Agency } from "./screens/Agency";
@@ -28,29 +28,12 @@ import { AgencyDetail } from "./screens/AgencyDetail";
 import { HomeDetail } from "./screens/HomeDetail";
 import { AgencyList } from "./screens/AgencyList";
 
-import {connect} from 'react-redux' 
+import { connect } from 'react-redux'
 
-import {getCountries} from './actions/generalActions'
-function HomeScreen({ navigation}) {
-  React.useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate("Login");
-    }, 1000);
-  }, []);
+import { getCountries } from './actions/generalActions'
+import { authenticateUser } from './actions/authActions'
+import CustomSplashScreen from './screens/SplashScreen'
 
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Image
-        style={{ width: 100, height: 100, marginBottom: 20 }}
-        source={{
-          uri:
-            "https://cdn.iconscout.com/icon/free/png-512/c-programming-569564.png",
-        }}
-      />
-      <ActivityIndicator size="large" color="#03254c" />
-    </View>
-  );
-}
 
 const Stack = createStackNavigator();
 
@@ -148,23 +131,23 @@ const createDrawer = () => (
         ),
       }}
     />
-    
-    
+
+
     <Drawer.Screen
       name="ProductMaker"
-     // header
+      // header
       component={ProductMaker}
-      // options={{
-      //   drawerLabel: nullComponent,
-      // }}
+    // options={{
+    //   drawerLabel: nullComponent,
+    // }}
     />
 
     <Drawer.Screen
       name="Product"
       component={Products}
-      // options={{
-      //   drawerLabel: nullComponent,
-      // }}
+    // options={{
+    //   drawerLabel: nullComponent,
+    // }}
     />
     <Drawer.Screen
       name="ProductDescription"
@@ -189,28 +172,47 @@ const createDrawer = () => (
     />
   </Drawer.Navigator>
 );
-function App({getCountries}) {
-  useEffect(()=>{
+function App({ getCountries,authenticateUser,isLoggedIn,utilsLoaded }) {
+  const checkUser = async () => {
+    const token = await AsyncStorage.getItem("token")
+    if (token) {
+      authenticateUser()
+    } 
     getCountries();
-  },[])
+
+  }
+
+  useEffect(() => {
+    checkUser();
+  }, [])
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Splash"
+        // initialRouteName="Splash"
         screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="Home" component={createDrawer} />
-        <Stack.Screen name="Splash" component={HomeScreen} />
+        {
+          !utilsLoaded
+          ?<Stack.Screen name="Splash" component={CustomSplashScreen} />
+          :isLoggedIn
+            ? <Stack.Screen name="Home" component={createDrawer} />
+            : <>
+              <Stack.Screen name="Login" component={Login} />
 
-        <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+              <Stack.Screen name="ChangePassword" component={ChangePassword} />
 
-        <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-        <Stack.Screen name="ChangePassword" component={ChangePassword} />
+              <Stack.Screen name="Register" component={Register} />
+            </>
+        }
 
-        <Stack.Screen name="Register" component={Register} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-export default connect(null,{getCountries})(App);
+const mapStateToProps=state=>({
+  isLoggedIn:state.authReducer.isLoggedIn,
+  utilsLoaded:state.generalReducer.utilsLoaded
+})
+export default connect(mapStateToProps, { getCountries,authenticateUser })(App);

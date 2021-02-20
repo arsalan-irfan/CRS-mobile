@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -9,13 +9,90 @@ import {
   Image,
   Picker,
   Alert,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { connect } from "react-redux";
+import { createUser } from '../actions/authActions'
+
+
+const SignupSchema = Yup.object().shape({
+  firstName: Yup.string().required('Required'),
+  lastName: Yup.string().required('Required'),
+  email: Yup.string().email('Invalid email').required('Required'),
+
+  country: Yup.string()
+    .required("Required"),
+
+  state: Yup.string(),
+  city: Yup.string(),
+  address: Yup.string()
+    .required("Required"),
+  password: Yup.string()
+    .min(8, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+
+  phoneNumber: Yup.string()
+    .required('Required')
+    .min(11, "Invalid Number")
+    .max(11, "Invalid Number"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Password must be the same!')
+    .required('Required'),
+
+});
+
+
+
 //import { ScrollView } from "react-native-gesture-handler";
-export const Register = (props) => {
+const Register = ({ navigation, cities, countries, states, createUser, isLoading }) => {
+  let reqbody = {
+    "FirstName": "string",
+    "LastName": "string",
+    "MiddleName": "string",
+    "Username": "string",
+    "EmailAddress": "string",
+    "Avatar": "string",
+    "Password": "string",
+    "TypeOfUser": 1,
+    "Id": 0,
+    "IsDeleted": true,
+    "Timestamp": "string",
+    "Name": "string",
+    "Description": "string"
+  }
+
   const [country, setCountry] = React.useState("Pakistan");
   const [city, setCity] = React.useState("Karachi");
   const [state, setState] = React.useState("Sindh");
+
+  const [filteredCountries, setCountries] = React.useState([]);
+  const [filteredCities, setCities] = React.useState([]);
+  const [filteredStates, setStates] = React.useState([]);
+
+  React.useEffect(() => {
+    setCountries(countries);
+    setCities(cities)
+    setStates(states)
+  }, [countries || cities || states])
+
+  const onSubmitHandler = (values) => {
+    const { firstName, lastName, email, password, address, phoneNumber, country, city, state } = values
+    let body = reqbody;
+    body.FirstName = firstName;
+    body.LastName = lastName;
+    body.EmailAddress = email;
+    body.Password = password;
+    body.Description = address;
+    body.Name = phoneNumber;
+
+    createUser(body, navigation)
+
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
@@ -34,173 +111,245 @@ export const Register = (props) => {
           }}
         />
       </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Email"
-          keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: "https://img.icons8.com/nolan/40/000000/email.png" }}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="First Name"
-          //keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: "https://img.icons8.com/metro/26/000000/user-male-circle.png",
-          }}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Last Name"
-          //keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
+      <Formik
+        enableReinitialize
+        initialValues={{ firstName: "", lastName: "", email: '', password: '', confirmPassword: "", address: "", phoneNumber: "", country: "", city: "", state: "" }}
+        onSubmit={values => { onSubmitHandler(values) }}
+        validationSchema={SignupSchema}>
+        {({ handleChange, handleBlur, handleSubmit, errors, touched, setFieldValue }) => (
+          <>
 
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: "https://img.icons8.com/metro/26/000000/user-male-circle.png",
-          }}
-        />
-      </View>
-      <TouchableOpacity style={[styles.buttonContainer, styles.signupButton]}>
-        <Text style={styles.btnText}>+ Upload Picture</Text>
-      </TouchableOpacity>
+            <View style={[styles.inputContainer, errors.email && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Email"
+                keyboardType="email-address"
+                underlineColorAndroid="transparent"
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+              //onChangeText={(email) => this.setState({email})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{ uri: "https://img.icons8.com/nolan/40/000000/email.png" }}
+              />
+            </View>
+            <View style={[styles.inputContainer, errors.firstName && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="First Name"
+                //keyboardType="email-address"
+                underlineColorAndroid="transparent"
+                onChangeText={handleChange('firstName')}
+                onBlur={handleBlur('firstName')}
+              //onChangeText={(email) => this.setState({email})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{
+                  uri: "https://img.icons8.com/metro/26/000000/user-male-circle.png",
+                }}
+              />
+            </View>
+            <View style={[styles.inputContainer, errors.lastName && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Last Name"
+                //keyboardType="email-address"
+                underlineColorAndroid="transparent"
+                onChangeText={handleChange('lastName')}
+                onBlur={handleBlur('lastName')}
+              //onChangeText={(email) => this.setState({email})}
+              />
 
-      <View style={styles.dropdownContainer}>
-        <Text style={{fontSize:18, color:'black', borderBottomWidth:2, borderBottomColor:'grey'}}>Country</Text>
-        <View style={styles.picker}>
-          <Picker
-            selectedValue={country}
-            style={{ height: 50, width: 300 }}
-            prompt="Country"
-            onValueChange={(itemValue, itemIndex) =>
-              setCountry(itemValue)
-            }
-          >
-            <Picker.Item label="Pakistan" value="Pakistan" />
-            <Picker.Item label="India" value="India" />
-          </Picker>
-        </View>
-      </View>
-      <View style={styles.dropdownContainer}>
-        <Text style={{fontSize:18, color:'black', borderBottomWidth:2, borderBottomColor:'grey'}}>State</Text>
-        <View style={styles.picker}>
-          <Picker
-            selectedValue={state}
-            style={{ height: 50, width: 300 }}
-            prompt="State"
-            onValueChange={(itemValue, itemIndex) =>
-              setState(itemValue)
-            }
-          >
-            <Picker.Item label="Abc" value="Abc" />
-            <Picker.Item label="xyz" value="xyz" />
-          </Picker>
-        </View>
-      </View>
-      <View style={styles.dropdownContainer}>
-        <Text style={{fontSize:18, color:'black', borderBottomWidth:2, borderBottomColor:'grey'}}>City</Text>
-        <View style={styles.picker}>
-          <Picker
-            selectedValue={city}
-            style={{ height: 50, width: 300 }}
-            prompt="City"
-            onValueChange={(itemValue, itemIndex) =>
-              setCity(itemValue)
-            }
-          >
-            <Picker.Item label="Karachi" value="karachi" />
-            <Picker.Item label="Lahore" value="lahore" />
-          </Picker>
-        </View>
-      </View>
-     
-     
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Address"
-          //keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: "https://img.icons8.com/wired/64/000000/address.png",
-          }}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Contact Number"
-          keyboardType="numeric"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{
-            uri: "https://img.icons8.com/wired/64/000000/new-contact.png",
-          }}
-        />
-      </View>
+              <Image
+                style={styles.inputIcon}
+                source={{
+                  uri: "https://img.icons8.com/metro/26/000000/user-male-circle.png",
+                }}
+              />
+            </View>
+            <TouchableOpacity style={[styles.buttonContainer, styles.signupButton]}>
+              <Text style={styles.btnText}>+ Upload Picture</Text>
+            </TouchableOpacity>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Password"
-          secureTextEntry={true}
-          underlineColorAndroid="transparent"
-          // onChangeText={(password) => this.setState({password})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Confirm Password"
-          secureTextEntry={true}
-          underlineColorAndroid="transparent"
-          // onChangeText={(password) => this.setState({password})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
-        />
-      </View>
-      <TouchableOpacity
-        style={[styles.buttonContainer, styles.signupButton]}
-        onPress={() => {
-          props.navigation.navigate("Home");
-        }}
-      >
-        <Text style={styles.btnText}>Register</Text>
-      </TouchableOpacity>
-      <View style={{marginBottom:"10%"}}></View>
+            <View style={[styles.dropdownContainer]}>
+              <Text style={{ fontSize: 18, color: 'black', borderBottomWidth: 2, borderBottomColor: 'grey' }}>Country</Text>
+              <View style={[styles.picker, errors.country && { borderColor: "red", borderWidth: 2 }]}>
+                <Picker
+                  selectedValue={country}
+                  style={{ height: 50, width: 300 }}
+                  prompt="Country"
+
+                  onBlur={handleBlur('country')}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setFieldValue('country', itemValue)
+                    setCountry(itemValue)
+                  }
+                  }
+                >
+                  <Picker.Item label="Select Country"
+                    value="" />
+                  {
+                    filteredCountries.map((obj, key) => {
+                      return <Picker.Item key={key} label={obj.name} value={obj.id} />
+                    })
+                  }
+                </Picker>
+              </View>
+            </View>
+            <View style={[styles.dropdownContainer]}>
+              <Text style={{ fontSize: 18, color: 'black', borderBottomWidth: 2, borderBottomColor: 'grey' }}>State</Text>
+              <View style={styles.picker}>
+                <Picker
+                  selectedValue={state}
+                  style={{ height: 50, width: 300 }}
+                  prompt="State"
+                  onBlur={handleBlur('state')}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setState(itemValue)
+                    setFieldValue('state', itemValue)
+                  }
+                  }
+                >
+                  <Picker.Item label="Select States" value="" />
+                  {
+                    filteredStates.map((obj, key) => {
+                      return <Picker.Item key={key} label={obj.name} value={obj.id} />
+                    })
+                  }
+                </Picker>
+              </View>
+            </View>
+            <View style={[styles.dropdownContainer]}>
+              <Text style={{ fontSize: 18, color: 'black', borderBottomWidth: 2, borderBottomColor: 'grey' }}>City</Text>
+              <View style={styles.picker}>
+                <Picker
+                  selectedValue={city}
+                  style={{ height: 50, width: 300 }}
+                  prompt="City"
+
+                  onBlur={handleBlur('city')}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setCity(itemValue)
+                    setFieldValue('city', itemValue)
+
+                  }
+                  }
+                >
+                  <Picker.Item label="Select City" value="" />
+                  {
+                    filteredCities.map((obj, key) => {
+                      return <Picker.Item key={key} label={obj.name} value={obj.id} />
+                    })
+                  }
+
+                </Picker>
+              </View>
+            </View>
+
+
+            <View style={[styles.inputContainer, errors.address && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Address"
+                onChangeText={handleChange('address')}
+                onBlur={handleBlur('address')}
+                //keyboardType="email-address"
+                underlineColorAndroid="transparent"
+              //onChangeText={(email) => this.setState({email})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{
+                  uri: "https://img.icons8.com/wired/64/000000/address.png",
+                }}
+              />
+            </View>
+            <View style={[styles.inputContainer, errors.phoneNumber && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Contact Number"
+                keyboardType="numeric"
+                onChangeText={handleChange('phoneNumber')}
+                onBlur={handleBlur('phoneNumber')}
+                underlineColorAndroid="transparent"
+              //onChangeText={(email) => this.setState({email})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{
+                  uri: "https://img.icons8.com/wired/64/000000/new-contact.png",
+                }}
+              />
+            </View>
+
+            <View style={[styles.inputContainer, errors.password && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Password"
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                secureTextEntry={true}
+                underlineColorAndroid="transparent"
+              // onChangeText={(password) => this.setState({password})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
+              />
+            </View>
+            <View style={[styles.inputContainer, errors.confirmPassword && { borderColor: "red", borderWidth: 2 }]}>
+              <TextInput
+                style={styles.inputs}
+                placeholder="Confirm Password"
+                secureTextEntry={true}
+                onChangeText={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
+                underlineColorAndroid="transparent"
+              // onChangeText={(password) => this.setState({password})}
+              />
+              <Image
+                style={styles.inputIcon}
+                source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
+              />
+            </View>
+            {
+              isLoading
+                ? (
+                  <ActivityIndicator size="large" color="#03254c" />
+                )
+                : (
+                  <TouchableOpacity
+                    style={[styles.buttonContainer, styles.signupButton]}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={styles.btnText}>Register</Text>
+                  </TouchableOpacity>
+                )
+
+            }
+
+
+          </>
+        )}
+      </Formik>
+
+      <View style={{ marginBottom: "10%" }}></View>
     </ScrollView>
   );
 };
+
+const mapStateToProps = state => ({
+  countries: state.generalReducer.countries,
+  states: state.generalReducer.states,
+  cities: state.generalReducer.cities,
+  isLoading: state.authReducer.isLoading
+})
+
+
+export default connect(mapStateToProps, { createUser })(Register)
+
 
 const styles = StyleSheet.create({
   logo: {
@@ -210,7 +359,7 @@ const styles = StyleSheet.create({
   },
   container: {
     marginTop: '7%',
-   flexGrow: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#DCDCDC",
@@ -222,7 +371,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     width: 300,
     height: 45,
-    marginTop:20,
+    marginTop: 20,
     marginBottom: 20,
     flexDirection: "row",
     alignItems: "center",

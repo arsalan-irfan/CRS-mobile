@@ -1,6 +1,8 @@
 export const Create_User_Success = "Create_User_Success";
 export const Create_User_Failed = "Create_User_Failed";
 
+export const Set_User_Authenticated = "Set_User_Authenticated";
+
 export const Updating_User = "Updating_User";
 export const Update_User_Success = "Update_User_Success";
 export const Update_User_Failed = "Update_User_Failed";

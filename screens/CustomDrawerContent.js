@@ -5,7 +5,8 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import { Icon } from "react-native-elements";
-
+import {connect} from "react-redux"
+import {logoutUser} from '../actions/authActions'
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 
 var { height, width } = Dimensions.get("window");
@@ -73,7 +74,8 @@ function Drawer(props) {
       <DrawerItem
         label="Sign out"
         onPress={() => {
-          props.navigation.navigate("Login");
+          // props.navigation.navigate("Login");
+          props.logoutUser(props.navigation)
         }}
         labelStyle={{ color: "#fff" }}
         // icon=
@@ -85,4 +87,4 @@ function Drawer(props) {
   );
 }
 
-export default Drawer;
+export default connect(null,{logoutUser})(Drawer);

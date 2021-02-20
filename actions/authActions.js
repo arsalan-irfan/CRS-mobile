@@ -1,5 +1,5 @@
-import { User_Fetched_Failed, User_Fetched_Success, User_Login_Success, Create_User_Failed, Create_User_Success, User_Loading, User_Logout, Update_User_Success, Update_User_Failed, Updating_User, } from './actionTypes';
-import { apiDomain } from './config'
+import { User_Fetched_Failed, User_Fetched_Success, User_Login_Success, Create_User_Failed, Create_User_Success, User_Loading, User_Logout, Update_User_Success, Update_User_Failed, Updating_User,Set_User_Authenticated } from './actionTypes';
+import { apiDomain } from '../config'
 import { AsyncStorage } from 'react-native'
 import axios from 'axios'
 import { showSnackbar } from './snackbarActions'
@@ -10,8 +10,17 @@ export const toggleLoader = () => dispatch => {
     })
 }
 
-export const logoutUser = () => async dispatch => {
+export const authenticateUser=()=>dispatch=>{
+    dispatch({
+        type:Set_User_Authenticated
+    })
+}
+
+export const logoutUser = (navigation) => async dispatch => {
     await AsyncStorage.removeItem('token')
+    await AsyncStorage.removeItem("id")
+    // navigation.navigate("Login");
+    
     dispatch({
         type: User_Logout
     })
@@ -21,15 +30,19 @@ export const logoutUser = () => async dispatch => {
 export const loginUser = (data) => async dispatch => {
     try {
         dispatch(toggleLoader())
-        let res = await axios.post(`${apiDomain}/users/login`, data);
+        let res = await axios.put(`${apiDomain}/Login`, data);
+        console.log(res.data)
         if (res.data.token) {
             await AsyncStorage.setItem("token", res.data.token)
+            await AsyncStorage.setItem("id", res.data.user.id.toString())
         }
+        dispatch(toggleLoader())
         dispatch({
             type: User_Login_Success,
             payload: res.data.token
         })
-        dispatch(getAuthenticatedUser())
+        console.log(res.data)
+        // dispatch(getAuthenticatedUser())
 
     } catch (error) {
         console.log("Error", error);
@@ -48,17 +61,20 @@ export const loginUser = (data) => async dispatch => {
 }
 
 
-export const createBuyer = (data) => async dispatch => {
+export const createUser = (data,navigation) => async dispatch => {
     try {
+        console.log("Here",data)
         dispatch(toggleLoader())
-        let res = await axios.post(`${apiDomain}/users/buyer`, data);
+        let res = await axios.post(`${apiDomain}/User`, data);
         console.log("Success", res.data);
-        await AsyncStorage.setItem("token", res.data.token);
-
+        // await AsyncStorage.setItem("token", res.data.token);
+        
+        dispatch(toggleLoader())
         dispatch({
             type: Create_User_Success
         })
-        dispatch(getAuthenticatedUser())
+        navigation.navigate("Login")
+        // dispatch(getAuthenticatedUser())
 
     } catch (error) {
         console.log("Error", error);

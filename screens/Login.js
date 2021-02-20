@@ -8,11 +8,34 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator
 } from "react-native";
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
-export const Login = ({navigation}) => {
- 
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { loginUser } from '../actions/authActions'
+
+
+const SigninSchema = Yup.object().shape({
+  password: Yup.string()
+    .min(8, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+  email: Yup.string().email('Invalid email').required('Required'),
+});
+
+
+
+const Login = ({ navigation, loginUser,isLoading }) => {
+
+  const onSubmitHandler = ({ email, password }) => {
+    let reqbody = {};
+    reqbody.Login = email
+    reqbody.Password = password;
+    loginUser(reqbody);
+  }
+
   return (
     <View style={styles.container}>
       <Image
@@ -31,57 +54,91 @@ export const Login = ({navigation}) => {
           }}
         />
       </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Email"
-          keyboardType="email-address"
-          underlineColorAndroid="transparent"
-          //onChangeText={(email) => this.setState({email})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: "https://img.icons8.com/nolan/40/000000/email.png" }}
-        />
-      </View>
+      <Formik
+        initialValues={{ email: '', password: '' }}
+        onSubmit={values => {
+          onSubmitHandler(values)
+          // props.navigation.navigate("Seller")
+        }}
+        validationSchema={SigninSchema}>
+        {
+          ({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
+            <>
+              <View style={[styles.inputContainer, errors.email && { borderColor: "red", borderWidth: 2 }]}>
+                <TextInput
+                  style={styles.inputs}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                //onChangeText={(email) => this.setState({email})}
+                />
+                <Image
+                  style={styles.inputIcon}
+                  source={{ uri: "https://img.icons8.com/nolan/40/000000/email.png" }}
+                />
+              </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputs}
-          placeholder="Password"
-          secureTextEntry={true}
-          underlineColorAndroid="transparent"
-          // onChangeText={(password) => this.setState({password})}
-        />
-        <Image
-          style={styles.inputIcon}
-          source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
-        />
-      </View>
+              <View style={[styles.inputContainer, errors.password && { borderColor: "red", borderWidth: 2 }]}>
+                <TextInput
+                  style={styles.inputs}
+                  placeholder="Password"
+                  secureTextEntry={true}
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                // onChangeText={(password) => this.setState({password})}
+                />
+                <Image
+                  style={styles.inputIcon}
+                  source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
+                />
+              </View>
+              {
+                isLoading
+                  ? (<ActivityIndicator size="large" color="#03254c" />)
+                  : <>
+                    <TouchableOpacity
+                      style={styles.btnForgotPassword}
+                      onPress={() => { navigation.navigate('ForgetPassword') }}
+                    >
+                      <Text style={styles.btnText}>Forgot your password?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.buttonContainer, styles.loginButton]}
+                      onPress={handleSubmit}
+                    >
+                      <Text style={styles.loginText}>Login</Text>
+                    </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.btnForgotPassword}
-        onPress={() => {navigation.navigate('ForgetPassword')}}
-      >
-        <Text style={styles.btnText}>Forgot your password?</Text>
-      </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.buttonContainer, styles.signupButton]}
+                      onPress={() => { navigation.navigate('Register') }}
+                    >
+                      <Text style={styles.btnText}>Register</Text>
+                    </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.buttonContainer, styles.loginButton]}
-         onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
+                  </>
+              }
 
-      <TouchableOpacity
-        style={[styles.buttonContainer, styles.signupButton]}
-        onPress={()=>{navigation.navigate('Register')}}
-      >
-        <Text style={styles.btnText}>Register</Text>
-      </TouchableOpacity>
+            </>
+          )
+        }
+
+
+      </Formik>
+
+
     </View>
   );
 };
+const mapStateToProps = state => ({
+  isLoading: state.authReducer.isLoading
+})
+
+export default connect(mapStateToProps, { loginUser })(Login)
+
 
 const styles = StyleSheet.create({
   logo: {

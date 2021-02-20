@@ -1,4 +1,4 @@
-import { User_Loading, User_Login_Success, User_Login_Failed, User_Fetched_Failed, User_Fetched_Success, User_Logout, Updating_User, Update_User_Success, Update_User_Failed} from '../actions/actionTypes'
+import { User_Loading, User_Login_Success, User_Login_Failed, User_Fetched_Failed, User_Fetched_Success, User_Logout, Updating_User, Update_User_Success, Update_User_Failed,Set_User_Authenticated} from '../actions/actionTypes'
 
 
 const initialState = {
@@ -13,6 +13,12 @@ const initialState = {
 export default function (state = initialState, action) {
     const { type, payload } = action;
     switch (type) {
+        case Set_User_Authenticated:
+            return {
+                ...state,
+                isLoggedIn:true,
+                isLoading:false
+            }
         case User_Loading:
             return {
                 ...state,
@@ -35,6 +41,7 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 token: payload.token,
+                isLoggedIn:true
             }
         case User_Fetched_Failed:
             return {
