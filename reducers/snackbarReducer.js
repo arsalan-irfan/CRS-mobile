@@ -19,7 +19,7 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 showSnackbar: true,
-                sellerMessage: payload
+                snackbarMessage: payload
             }     
         default:
             return state;

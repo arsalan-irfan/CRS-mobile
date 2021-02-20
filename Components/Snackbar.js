@@ -3,11 +3,11 @@ import { Snackbar } from 'react-native-paper'
 import { connect } from 'react-redux';
 import { hideSnackbar } from '../actions/snackbarActions'
 
-function SellerSnackbar({ sellerSnackbar, snackbarMessage, hideSellerSnackbar }) {
+function SellerSnackbar({ showSnackbar, snackbarMessage, hideSnackbar }) {
     return (
         <Snackbar
-            visible={sellerSnackbar}
-            onDismiss={hideSellerSnackbar}
+            visible={showSnackbar}
+            onDismiss={hideSnackbar}
             duration={5000}
         >
             {snackbarMessage}
@@ -15,7 +15,7 @@ function SellerSnackbar({ sellerSnackbar, snackbarMessage, hideSellerSnackbar })
     )
 }
 const mapStateToProps = state => ({
-    sellerSnackbar: state.snackbarReducer.sellerSnackbar,
-    snackbarMessage: state.snackbarReducer.sellerMessage
+    showSnackbar: state.snackbarReducer.showSnackbar,
+    snackbarMessage: state.snackbarReducer.snackbarMessage
 })
-export default connect(mapStateToProps, { hideSellerSnackbar })(SellerSnackbar)
+export default connect(mapStateToProps, { hideSnackbar })(SellerSnackbar)

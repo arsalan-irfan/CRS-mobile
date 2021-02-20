@@ -172,12 +172,12 @@ const createDrawer = () => (
     />
   </Drawer.Navigator>
 );
-function App({ getCountries,authenticateUser,isLoggedIn,utilsLoaded }) {
+function App({ getCountries, authenticateUser, isLoggedIn, utilsLoaded }) {
   const checkUser = async () => {
     const token = await AsyncStorage.getItem("token")
     if (token) {
       authenticateUser()
-    } 
+    }
     getCountries();
 
   }
@@ -194,25 +194,25 @@ function App({ getCountries,authenticateUser,isLoggedIn,utilsLoaded }) {
       >
         {
           !utilsLoaded
-          ?<Stack.Screen name="Splash" component={CustomSplashScreen} />
-          :isLoggedIn
-            ? <Stack.Screen name="Home" component={createDrawer} />
-            : <>
-              <Stack.Screen name="Login" component={Login} />
+            ? <Stack.Screen name="Splash" component={CustomSplashScreen} />
+            : isLoggedIn
+              ? <Stack.Screen name="Home" component={createDrawer} />
+              : <>
+                <Stack.Screen name="Login" component={Login} />
 
-              <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-              <Stack.Screen name="ChangePassword" component={ChangePassword} />
+                <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+                <Stack.Screen name="ChangePassword" component={ChangePassword} />
 
-              <Stack.Screen name="Register" component={Register} />
-            </>
+                <Stack.Screen name="Register" component={Register} />
+              </>
         }
 
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-const mapStateToProps=state=>({
-  isLoggedIn:state.authReducer.isLoggedIn,
-  utilsLoaded:state.generalReducer.utilsLoaded
+const mapStateToProps = state => ({
+  isLoggedIn: state.authReducer.isLoggedIn,
+  utilsLoaded: state.generalReducer.utilsLoaded
 })
-export default connect(mapStateToProps, { getCountries,authenticateUser })(App);
+export default connect(mapStateToProps, { getCountries, authenticateUser })(App);

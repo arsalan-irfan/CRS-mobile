@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { loginUser } from '../actions/authActions'
-
+import Snackbar from '../Components/Snackbar'
 
 const SigninSchema = Yup.object().shape({
   password: Yup.string()
@@ -38,6 +38,7 @@ const Login = ({ navigation, loginUser,isLoading }) => {
 
   return (
     <View style={styles.container}>
+      <Snackbar />
       <Image
         style={styles.bgImage}
         source={{
