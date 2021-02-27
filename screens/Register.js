@@ -16,7 +16,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from "react-redux";
 import { createUser } from '../actions/authActions'
-
+import Snackbar from '../Components/Snackbar'
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string().required('Required'),
@@ -95,6 +95,7 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Snackbar />
       <Image
         style={styles.bgImage}
         source={{

@@ -16,7 +16,17 @@ import {
   Text,
   Card,
 } from "react-native-elements";
-export const AgencyDetail = ({navigation}) => {
+import { formatImageString } from '../helper/helper'
+
+
+export const AgencyDetail = ({ navigation, route }) => {
+  const [agencyData, setAgencyData] = React.useState({});
+
+  React.useEffect(() => {
+    const { data } = route.params
+    setAgencyData(data);
+  }, [route.params])
+
   return (
     <ScrollView contentContainerStyle={{ alignItems: "center" }}>
       <Header
@@ -32,132 +42,76 @@ export const AgencyDetail = ({navigation}) => {
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>Profile</Text>
         }
-        //        rightComponent={{ icon: "home", color: "#fff" }}
+      //        rightComponent={{ icon: "home", color: "#fff" }}
       />
-      <View>
-        <View>
-          <Image
-            source={{
-              uri:
-                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8dXNlcnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80",
-            }}
-            style={{
-              width: 100,
-              height: 100,
 
-              borderRadius: 100,
-            }}
-          />
-          <Text h4>Mathey Doe</Text>
-          <Text>Karachi, Pakistan</Text>
-        </View>
-      </View>
+      {agencyData && agencyData.id
+        ? (
+          <>
+            <View>
+              <View>
+                <Image
+                  source={{
+                    uri:
+                      formatImageString(agencyData.avatar),
+                  }}
+                  style={{
+                    width: 100,
+                    height: 100,
 
-      <Text style={{ marginRight: 10 }}>Address: Gulshan e Iqbal</Text>
+                    borderRadius: 100,
+                  }}
+                />
+                <Text h4>{agencyData.middleName}</Text>
+                {/* <Text>Karachi, Pakistan</Text> */}
+              </View>
+            </View>
 
-      <Text style={{ marginRight: 10 }}>Contact: 0341-12131121</Text>
-      <Card>
-        <Card.Title style={{ alignSelf: "flex-start" }}>Description</Card.Title>
-        <Card.Divider />
-        <Text>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries
-        </Text>
-        <Text style={{ fontWeight: "bold" }}>Specialities</Text>
+            <Text style={{ marginRight: 10 }}>Address: {agencyData.name}</Text>
 
-        <Text style={{ fontWeight: "bold" }}>
-          Motivating,asdjasd,asdasdsa, asd asd asd as das d asd{" "}
-        </Text>
-      </Card>
-      <Card>
-        <Card.Title style={{ alignSelf: "flex-start" }}>Skills</Card.Title>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: 5,
-              margin: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              margin: 5,
+            <Text style={{ marginRight: 10 }}>Contact: {agencyData.username}</Text>
+            <Card>
+              <Card.Title style={{ alignSelf: "flex-start" }}>Description</Card.Title>
+              <Card.Divider />
+              <Text>
+                {agencyData.description}
+              </Text>
+              <Text style={{ fontWeight: "bold" }}>Specialities</Text>
 
-              padding: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              margin: 5,
+              <Text style={{ fontWeight: "bold" }}>
+                Motivating,asdjasd,asdasdsa, asd asd asd as das d asd{" "}
+              </Text>
+            </Card>
+            <Card>
+              <Card.Title style={{ alignSelf: "flex-start" }}>Skills</Card.Title>
+              <View style={{ flexDirection: "row" }}>
+                {agencyData.agencyProfiles[0].agencySkills.map(obj => {
+                  return (
+                    <Text
+                      style={{
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        padding: 5,
+                        margin: 5,
+                        fontWeight: "bold",
+                        backgroundColor: "#C0C0C0",
+                      }}
+                    >
+                      {obj.skill.name}
+                    </Text>
+                  )
+                })}
 
-              padding: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              margin: 5,
 
-              padding: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              margin: 5,
+              </View>
+            </Card>
 
-              padding: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              margin: 5,
+            <Button buttonStyle={{ borderRadius: 20, marginTop: 50 }} onPress={() => { navigation.navigate('Proposal') }} title="Submit a Proposal" />
 
-              padding: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            Construction
-          </Text>
-        </View>
-      </Card>
-
-      <Button buttonStyle={{borderRadius:20, marginTop:50}} onPress={()=>{navigation.navigate('Proposal')}} title="Submit a Proposal"/>
+          </>
+        )
+        : (<View></View>)
+      }
     </ScrollView>
   );
 };

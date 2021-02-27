@@ -16,7 +16,18 @@ import {
   Text,
   Card,
 } from "react-native-elements";
-export const HomeDetail = ({ navigation }) => {
+import { formatImageString } from '../helper/helper'
+
+
+export const HomeDetail = ({ navigation, route }) => {
+  const [agencyData, setAgencyData] = React.useState({});
+  
+  React.useEffect(() => {
+    const {data}=route.params
+    setAgencyData(data);
+  }, [route.params])
+
+
   return (
     <ScrollView>
       <Header
@@ -32,14 +43,16 @@ export const HomeDetail = ({ navigation }) => {
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>Profile</Text>
         }
-        //        rightComponent={{ icon: "home", color: "#fff" }}
+      //        rightComponent={{ icon: "home", color: "#fff" }}
       />
+      {
+        agencyData && agencyData.id?(
+<>
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <View>
           <Image
             source={{
-              uri:
-                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8dXNlcnxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80",
+              uri: formatImageString(agencyData.avatar),
             }}
             style={{
               width: 100,
@@ -48,27 +61,23 @@ export const HomeDetail = ({ navigation }) => {
               borderRadius: 100,
             }}
           />
-          <Text h4>Mathey Doe</Text>
-          <Text>Karachi, Pakistan</Text>
+          <Text h4>{agencyData.middleName}</Text>
+          {/* <Text>{agencyData.name}</Text> */}
         </View>
       </View>
 
       <Text style={{ marginRight: 10, alignSelf: "center" }}>
-        Address: Gulshan e Iqbal
+        Address: {agencyData.name}
       </Text>
 
       <Text style={{ marginRight: 10, alignSelf: "center" }}>
-        Contact: 0341-12131121
+        Contact: {agencyData.username}
       </Text>
       <Card>
         <Card.Title style={{ alignSelf: "flex-start" }}>Overview</Card.Title>
         <Card.Divider />
         <Text>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries
+        {agencyData.description}
         </Text>
         <Text style={{ fontWeight: "bold" }}>Specialities</Text>
 
@@ -103,21 +112,29 @@ export const HomeDetail = ({ navigation }) => {
         title="Submit a Proposal"
       /> */}
       <Card>
-          <Card.Title style={{alignSelf:'flex-start'}}>Attachments:</Card.Title>
-          <Card.Divider/>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: 5,
-              margin: 5,
-              fontWeight: "bold",
-              backgroundColor: "#C0C0C0",
-            }}
-          >
-            File 1
+        <Card.Title style={{ alignSelf: 'flex-start' }}>Attachments:</Card.Title>
+        <Card.Divider />
+        <Text
+          style={{
+            borderWidth: 1,
+            borderRadius: 10,
+            padding: 5,
+            margin: 5,
+            fontWeight: "bold",
+            backgroundColor: "#C0C0C0",
+          }}
+        >
+          File 1
           </Text>
       </Card>
-    </ScrollView>
+        </>
+
+        ):(
+          <View></View>
+        )
+      }
+      
+      
+      </ScrollView>
   );
 };

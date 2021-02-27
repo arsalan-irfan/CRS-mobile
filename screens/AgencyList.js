@@ -3,7 +3,6 @@ import { StyleSheet, View, Text } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
-import { TimelineCard } from "../Components/TimelineCard";
 import { VendorCard } from "./VendorCard";
 export const AgencyList = ({navigation}) => {
   const [search, setSearch] = React.useState("");

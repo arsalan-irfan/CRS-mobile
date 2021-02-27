@@ -1,22 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import { Header } from "react-native-elements";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
 import { TimelineCard } from "../Components/TimelineCard";
-const users = [
-  {
-    name: "brynn",
-    avatar:
-      "https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png",
-  },
+import axios from 'axios';
+import {apiDomain} from '../config' 
 
-  // more users here
-];
+
+;
 export const Home = ({ navigation }) => {
   const [search, setSearch] = React.useState("");
+  const [agencies,setAgencies]=React.useState([]);
 
+  useEffect(()=>{
+    fetchAgencies();
+  },[])
+  
+  const fetchAgencies = async() =>{
+    try {
+      const response = await axios.get(`${apiDomain}/Agency`);
+      let res = response.data
+      setAgencies(res);
+    } catch (error) {
+      console.log(error.message);
+    }
+
+  }
   return (
     <View>
       <Header
@@ -43,9 +54,14 @@ export const Home = ({ navigation }) => {
         value={search}
       />
       <View>
-        <TimelineCard navigation={navigation} navigateTo="HomeDetail" />
-        <TimelineCard navigation={navigation} navigateTo="HomeDetail" />
-        <TimelineCard navigation={navigation} navigateTo="HomeDetail" />
+        {
+          agencies.map((obj,index)=>{
+            return <TimelineCard data={obj} navigation={navigation} navigateTo="HomeDetail" key={index} />
+          })
+        }
+        
+        {/* <TimelineCard navigation={navigation} navigateTo="HomeDetail" />
+        <TimelineCard navigation={navigation} navigateTo="HomeDetail" /> */}
       </View>
     </View>
   );

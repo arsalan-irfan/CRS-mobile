@@ -11,9 +11,11 @@ export const toggleLoader = () => dispatch => {
 }
 
 export const authenticateUser=()=>dispatch=>{
-    dispatch({
-        type:Set_User_Authenticated
-    })
+    // dispatch({
+    //     type:Set_User_Authenticated
+    // })
+    dispatch(toggleLoader());
+    dispatch(getAuthenticatedUser());
 }
 
 export const logoutUser = (navigation) => async dispatch => {
@@ -42,7 +44,7 @@ export const loginUser = (data) => async dispatch => {
             payload: res.data.token
         })
         console.log(res.data)
-        // dispatch(getAuthenticatedUser())
+        dispatch(getAuthenticatedUser())
 
     } catch (error) {
         console.log("Error", error);
@@ -130,33 +132,17 @@ export const createSeller = (data) => async dispatch => {
 
 export const getAuthenticatedUser = () => async dispatch => {
     try {
-
-        let token = await AsyncStorage.getItem('token')
-        const config = {
-            headers: {
-                "Authorization": token,
-            },
-        };
-
-        let res = await axios.get(`${apiDomain}/users/getProfile`, config);
-        dispatch(toggleLoader())
-        const { user } = res.data
+        let uid = await AsyncStorage.getItem('id')
+        let res = await axios.get(`${apiDomain}/User/${uid}`);
+        console.log(res.data);
         dispatch({
             type: User_Fetched_Success,
-            payload: res.data.user
+            payload: res.data
         })
-        if (user.isSeller) {
-            dispatch({
-                type: Fetch_Products_Success,
-                payload: user.products
-            })
-            dispatch(showSnackbar("Successfully Authenticated !"));
-        } else {
-
-        }
-
+        dispatch(toggleLoader())
     } catch (error) {
         console.log("Error", error);
+        dispatch(toggleLoader())        
         dispatch({
             type: User_Fetched_Failed
         })
@@ -168,23 +154,16 @@ export const getAuthenticatedUser = () => async dispatch => {
 
 export const updateUser = (data) => async dispatch => {
     try {
-
-        let token = await AsyncStorage.getItem('token')
-        const config = {
-            headers: {
-                "Authorization": token,
-            },
-        };
         dispatch({
             type: Updating_User
         })
 
-        let res = await axios.put(`${apiDomain}/users/update`, data, config);
+        let res = await axios.put(`${apiDomain}/User/${data.id}`, data);
 
         dispatch(showSnackbar("User Updated Successfully"));
         dispatch({
             type: Update_User_Success,
-            payload: res.data.user
+            payload: res.data
         })
 
 

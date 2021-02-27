@@ -3,8 +3,8 @@ import { View, StyleSheet, Dimensions, Text } from "react-native";
 import { TabView, SceneMap } from "react-native-tab-view";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Header, Icon } from "react-native-elements";
-import { EditProfile } from "./EditProfile";
-import { EditPassword } from "./EditPassword";
+import EditProfile  from "./EditProfile";
+import  EditPassword  from "./EditPassword";
 const Tab = createMaterialTopTabNavigator();
 
 

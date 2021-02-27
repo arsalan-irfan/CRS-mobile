@@ -8,7 +8,6 @@ import { Icon } from "react-native-elements";
 import {connect} from "react-redux"
 import {logoutUser} from '../actions/authActions'
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
-
 var { height, width } = Dimensions.get("window");
 
 function Drawer(props) {
@@ -67,7 +66,7 @@ function Drawer(props) {
             marginBottom: 10,
           }}
         >
-          Name
+          {props.user?props.user.firstName:"..."}
         </Text>
       </View>
       <DrawerItemList state={newState} {...rest} />
@@ -86,5 +85,7 @@ function Drawer(props) {
     </DrawerContentScrollView>
   );
 }
-
-export default connect(null,{logoutUser})(Drawer);
+const mapStateToProps = state => ({
+  user: state.authReducer.user
+})
+export default connect(mapStateToProps,{logoutUser})(Drawer);
