@@ -26,5 +26,13 @@ export const Show_Buyer_Snackbar = "Show_Buyer_Snackbar";
 export const Hide_Snackbar = "Hide_Snackbar";
 export const Show_Snackbar = "Show_Snackbar";
 
-export const Fetch_General_Data_Success="Fetch_General_Data_Success"
-export const Fetch_General_Data_Failed="Fetch_General_Data_Failed"
+export const Fetch_General_Data_Success = "Fetch_General_Data_Success"
+export const Fetch_General_Data_Failed = "Fetch_General_Data_Failed"
+
+// Cart-Types:
+
+export const Add_Product = "Add_Product";
+export const Remove_Product = "Remove_Product";
+export const Inc_Quantity = "Inc_Quantity";
+export const Dec_Quantity = "Dec_Quantity";
+export const Empty_Cart = "Empty_Cart";

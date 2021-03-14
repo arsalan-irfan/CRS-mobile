@@ -1,11 +1,13 @@
 import React from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View,  ScrollView, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View,  ScrollView, ActivityIndicator,BackHandler } from "react-native";
 
 import { Header, Icon, SearchBar } from "react-native-elements";
 import { ProductCard } from "../src/Cards/ProductCard";
 // import { FlatList } from "react-native-gesture-handler";
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+
 import { apiDomain } from '../config'
 
 export const Products = ({ navigation, route }) => {
@@ -13,6 +15,26 @@ export const Products = ({ navigation, route }) => {
   const { categoryId,company } = route.params;
   const [products, setProducts] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [backPressEnabled,setBackPressEnabled]=React.useState(true)
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const onBackPress = () => {
+  //       if (backPressEnabled) {
+          
+  //         return true;
+  //       } else {
+  //         return false;
+  //       }
+  //     };
+
+  //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+  //     return () =>
+  //       BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  //   }, [])
+  // );
+  
 
   const fetchProducts = async () => {
     try {
