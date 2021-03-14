@@ -1,11 +1,16 @@
-import React, {useState} from "react";
+import React, { useEffect } from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator,RefreshControl,ScrollView } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
 import { TimelineCard } from "../Components/TimelineCard";
 import { VendorCard } from "./VendorCard";
+import axios from 'axios';
+import { apiDomain } from '../config'
+
+
+
 const users = [
   {
     name: "brynn",
@@ -17,12 +22,36 @@ const users = [
 ];
 export const ProductMaker = ({ navigation }) => {
   const [search, setSearch] = React.useState("");
+  const [vendors, setVendors] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+
+  useEffect(() => {
+    fetchVendors();
+  }, []);
+
+  const fetchVendors = async () => {
+    try {
+      setIsLoading(true)
+      const response = await axios.get(`${apiDomain}/VendorCategories`);
+      let res = response.data
+      setIsLoading(false)
+      setVendors(res);
+    } catch (error) {
+      setIsLoading(false)
+      console.log(error.message);
+    }
+
+  }
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
 
   return (
     <View>
       <Header
-        // backgroundColor={"black"}
-        // containerStyle={{ height: "10%" }}
         leftComponent={{
           icon: "menu",
           color: "#fff",
@@ -33,7 +62,7 @@ export const ProductMaker = ({ navigation }) => {
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>ConstructTo</Text>
         }
-        //        rightComponent={{ icon: "home", color: "#fff" }}
+      //        rightComponent={{ icon: "home", color: "#fff" }}
       />
 
       <SearchBar
@@ -43,21 +72,40 @@ export const ProductMaker = ({ navigation }) => {
         autoCorrect={false}
         value={search}
       />
-      <View>
-        <VendorCard
-          category="lucky Cement"
-          image="https://www.lucky-cement.com/wp-content/uploads/2017/02/cropped-lucky-logo.png"
-          navigateTo="Product"
-          navigation={navigation}
-        />
 
-        <VendorCard
-          category="Textile industry"
-          image="https://thumbs.dreamstime.com/b/black-textile-isolated-vector-icon-simple-element-illustration-industry-concept-icons-editable-logo-symbol-design-white-143598601.jpg"
-          navigateTo="Product"
-          navigation={navigation}
-        />
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
+        {isLoading
+          ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+              <ActivityIndicator size="large" color="#03254c" />
+            </View>
+          )
+          : (
+            <View>
+              {
+                vendors.map((obj, index) => {
+                  return <VendorCard
+                    category="lucky Cement"
+                    image="https://www.lucky-cement.com/wp-content/uploads/2017/02/cropped-lucky-logo.png"
+                    navigateTo="Product"
+                    navigation={navigation}
+                    key={index}
+                    data={obj}
+                  />
+                })
+              }
+            </View>
+          )
+        }
+
+      </ScrollView>
     </View>
   );
 };

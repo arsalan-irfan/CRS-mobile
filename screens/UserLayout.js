@@ -18,6 +18,7 @@ import { Checkout } from "./Checkout";
 import { AgencyDetail } from "./AgencyDetail";
 import { HomeDetail } from "./HomeDetail";
 import { AgencyList } from "./AgencyList";
+
 import { connect } from 'react-redux';
 
 const Drawer = createDrawerNavigator();
@@ -90,7 +91,7 @@ const UserLayout = ({ user }) => {
             />
             <Drawer.Screen
                 name="Vendor"
-                component={Vendor}
+                component={ProductMaker}
                 options={{
                     drawerIcon: ({ tintColor }) => (
                         <Icon

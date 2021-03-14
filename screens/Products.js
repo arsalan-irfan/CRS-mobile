@@ -1,13 +1,39 @@
 import React from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View, FlatList, ScrollView } from "react-native";
+import { StyleSheet, Text, View,  ScrollView, ActivityIndicator } from "react-native";
 
 import { Header, Icon, SearchBar } from "react-native-elements";
 import { ProductCard } from "../src/Cards/ProductCard";
 // import { FlatList } from "react-native-gesture-handler";
+import axios from 'axios';
+import { apiDomain } from '../config'
 
-export const Products = ({ navigation }) => {
+export const Products = ({ navigation, route }) => {
   const [search, setSearch] = React.useState("");
+  const { categoryId,company } = route.params;
+  const [products, setProducts] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true)
+      const response = await axios.get(`${apiDomain}/VendorProducts`);
+      let res = response.data
+      let temp = res.filter((obj) => {
+        return obj.categoryId === categoryId
+      })
+      setIsLoading(false)
+      setProducts(temp);
+    } catch (error) {
+      setIsLoading(false)
+      console.log(error.message);
+    }
+
+  }
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <ScrollView>
@@ -24,8 +50,8 @@ export const Products = ({ navigation }) => {
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>ConstructTo</Text>
         }
-        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={()=>{navigation.navigate('Checkout')}}/>}
-        //        rightComponent={{ icon: "home", color: "#fff" }}
+        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={() => { navigation.navigate('Checkout') }} />}
+      //        rightComponent={{ icon: "home", color: "#fff" }}
       />
 
       <SearchBar
@@ -35,15 +61,25 @@ export const Products = ({ navigation }) => {
         autoCorrect={false}
         value={search}
       />
-      <ScrollView horizontal={true}>
-        <ProductCard navigation={navigation} />
-        <ProductCard navigation={navigation} />
-      </ScrollView>
+      {
+        isLoading
+          ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+              <ActivityIndicator size="large" color="#03254c" />
+            </View>
+          )
+          : (
+            <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+              {
+                products.map((obj, index) => {
+                  return <ProductCard company={company} navigation={navigation} data={obj} key={index} />
+                })
+              }
+            </View>
+          )
+      }
 
-      <ScrollView horizontal={true}>
-        <ProductCard navigation={navigation} />
-        <ProductCard navigation={navigation} />
-      </ScrollView>
+
     </ScrollView>
   );
 };

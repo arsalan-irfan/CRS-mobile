@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList,ActivityIndicator } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
@@ -13,6 +13,7 @@ import { apiDomain } from '../config'
 export const Agency = ({ navigation }) => {
   const [search, setSearch] = React.useState("");
   const [agencies, setAgencies] = React.useState([]);
+  const [isLoading,setIsLoading] = React.useState(false);
 
   useEffect(() => {
     fetchAgencies();
@@ -20,10 +21,13 @@ export const Agency = ({ navigation }) => {
 
   const fetchAgencies = async () => {
     try {
+      setIsLoading(true)
       const response = await axios.get(`${apiDomain}/Agency`);
       let res = response.data
       setAgencies(res);
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       console.log(error.message);
     }
 
@@ -53,16 +57,25 @@ export const Agency = ({ navigation }) => {
         autoCorrect={false}
         value={search}
       />
-      <View>
+      {isLoading
+      ?(
+        <View style={{flex:1,justifyContent:"center",alignItems:"center",marginTop:20}}>
+          <ActivityIndicator size="large" color="#03254c" />
+        </View>
+      )
+      :(
+        <View>
         {
           agencies.map((obj, index) => {
             return <TimelineCard data={obj} navigation={navigation} navigateTo="AgencyDetail" key={index} />
           })
         }
 
-        {/* <TimelineCard navigation={navigation} navigateTo="HomeDetail" />
-        <TimelineCard navigation={navigation} navigateTo="HomeDetail" /> */}
+        
       </View>
+      )
+      }
+      
     </View>
   );
 };
