@@ -9,6 +9,7 @@ export default function (state = initialState, action) {
     const { type, payload } = action;
     switch (type) {
         case Add_Product:
+            console.log("Adding")
             let temp = state.products;
             temp.push(payload);
             return {
@@ -17,16 +18,23 @@ export default function (state = initialState, action) {
                 totalPrice: state.totalPrice + payload.price
             }
         case Remove_Product:
-            let temp1 = state.products.filter(prod => prod.id !== payload.id);
+            console.log("Removing")
+            let temp1 = state.products.filter(prod =>{ 
+                console.log(prod.productId, "!==" ,payload.productId)
+                return prod.productId !== payload.productId
+            });
             return {
                 ...state,
                 products: temp1,
-                totalPrice: state.totalPrice + payload.price
+                totalPrice: state.totalPrice - payload.price
             }
         case Inc_Quantity:
-            let index = state.products.findIndex(prod => prod.id === payload.price);
-            let temp2 = state.products
-            temp2[index].quantity += 1
+            console.log("Inc")
+
+            let index = state.products.findIndex(prod => prod.productId === payload.productId);
+            let temp2 = state.products;
+            temp2[index].quantity += 1;
+            temp2[index].subtotal += payload.price;
 
             return {
                 ...state,
@@ -34,8 +42,12 @@ export default function (state = initialState, action) {
                 totalPrice: state.totalPrice + payload.price
             }
         case Dec_Quantity:
-            let index1 = state.products.findIndex(prod => prod.id === payload.price);
-            let temp3 = state.products
+            console.log("Dec:::")
+
+            let index1 = state.products.findIndex(prod => prod.productId === payload.productId);
+            console.log(index1,payload);
+            let temp3 = state.products;
+            temp3[index1].subtotal -= payload.price;
             temp3[index1].quantity -= 1
 
             return {

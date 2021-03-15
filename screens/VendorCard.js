@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 export const VendorCard = ({ image, navigation, navigateTo, data }) => {
-
+  console.log(data)
   return (
     <TouchableOpacity onPress={() => { navigation.navigate(`${navigateTo}`, { categoryId: data.id, company: data.name }) }}>
       <View
@@ -18,9 +18,10 @@ export const VendorCard = ({ image, navigation, navigateTo, data }) => {
           flexDirection: "row",
           width: "100%",
           height: 30,
+          height:"100%",
           borderColor: "grey",
           borderWidth: 1,
-          marginBottom: 100,
+          marginBottom: 10,
           //marginTop:100,
 
         }}

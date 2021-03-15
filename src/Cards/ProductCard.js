@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { Button, Card, Icon } from "react-native-elements";
 import Counter from "react-native-counters";
 import { formatImageString } from '../../helper/helper'
-export const ProductCard = ({ navigation, data, company }) => {
+
+
+export const ProductCard = ({ navigation, data, company,addToCart,removeFromCart,isAdded }) => {
+  const [isAddedToCart,setIsAddedToCart]=React.useState(false);
+  React.useEffect(()=>{
+    setIsAddedToCart(isAdded(data))
+  },[])
+  
+  
   function onChange(number, type) {
     console.log(number, type); // 1, + or -
   }
@@ -49,6 +57,7 @@ export const ProductCard = ({ navigation, data, company }) => {
         onPress={() => { 
           navigation.navigate("ProductDescription", {
             data: {
+              id:data.id,
               imagePath: formatImageString(data.imagePath),
               name: data.name,
               price: data.productPriceAffections[1].price,
@@ -57,7 +66,20 @@ export const ProductCard = ({ navigation, data, company }) => {
           });
         }}
       />
-      <Button title="Add to Cart" />
+      {
+        isAddedToCart ?
+        (<Button title="Remove from Cart" onPress={()=>{
+          removeFromCart(data);
+          setIsAddedToCart(false);
+        }} />):
+        (<Button title="Add to Cart" 
+        onPress={()=>{
+          addToCart(data);
+          setIsAddedToCart(true);
+        
+        }} />)
+      }
+      
     </Card>
   );
 };

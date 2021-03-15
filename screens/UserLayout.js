@@ -12,9 +12,9 @@ import { Settings } from "./Settings";
 import { Vendor } from "./Vendor";
 import { ProductMaker } from "./ProductMaker";
 
-import { Products } from "./Products";
-import { ProductDescription } from "./ProductDescription";
-import { Checkout } from "./Checkout";
+import  Products  from "./Products";
+import ProductDescription  from "./ProductDescription";
+import  Checkout from "./Checkout";
 import { AgencyDetail } from "./AgencyDetail";
 import { HomeDetail } from "./HomeDetail";
 import { AgencyList } from "./AgencyList";
