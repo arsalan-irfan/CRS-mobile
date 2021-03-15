@@ -38,7 +38,7 @@ export const loginUser = (data) => async dispatch => {
             await AsyncStorage.setItem("token", res.data.token)
             await AsyncStorage.setItem("id", res.data.user.id.toString())
         }
-        dispatch(toggleLoader())
+        // dispatch(toggleLoader())
         dispatch({
             type: User_Login_Success,
             payload: res.data.token
