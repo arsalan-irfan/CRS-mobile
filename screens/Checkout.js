@@ -11,14 +11,14 @@ import Snackbar from '../Components/Snackbar'
 import { showSnackbar } from '../actions/snackbarActions'
 
 const Checkout = ({ navigation, addProduct, removeProduct, incQuantity, decQuantity, emptyCart, user, totalPrice, cartItems, route,showSnackbar }) => {
-    const { categoryId } = route.params;
+    const { vendorId } = route.params;
     console.log(route)
     const [isLoading, setIsLoading] = React.useState(false)
     const onSubmitHandler = async () => {
         try {
             setIsLoading(true)
             let body = {
-                "InvoicedToId": categoryId,
+                "InvoicedToId": vendorId,
                 "InvoiceById": user.id,
                 "InvoiceType": 1,
                 "Total": totalPrice,

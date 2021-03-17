@@ -34,7 +34,7 @@ export const ProductMaker = ({ navigation }) => {
   const fetchVendors = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${apiDomain}/VendorCategories`);
+      const response = await axios.get(`${apiDomain}/Vendor`);
       let res = response.data
       setIsLoading(false)
       setVendors(res);

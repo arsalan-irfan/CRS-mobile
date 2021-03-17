@@ -14,7 +14,7 @@ import { addProduct, emptyCart, removeProduct } from '../actions/cartActions'
 
 const Products = ({ navigation, route, cartItems, addProduct, removeProduct,emptyCart }) => {
   const [search, setSearch] = React.useState("");
-  const { categoryId, company } = route.params;
+  const { vendorId, company } = route.params;
   const [products, setProducts] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   
@@ -87,7 +87,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
       const response = await axios.get(`${apiDomain}/VendorProducts`);
       let res = response.data
       let temp = res.filter((obj) => {
-        return obj.categoryId === categoryId
+        return obj.vendorId === vendorId
       })
       setIsLoading(false)
       setProducts(temp);
@@ -105,7 +105,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
     return function cleanup() {
       setProducts([]);
     };
-  }, [categoryId]);
+  }, [vendorId]);
 
   React.useEffect(() => {
     console.log("Reload");
@@ -135,7 +135,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>ConstructTo</Text>
         }
-        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={() => { navigation.navigate('Checkout',{categoryId}) }} />}
+        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={() => { navigation.navigate('Checkout',{vendorId}) }} />}
       //        rightComponent={{ icon: "home", color: "#fff" }}
       />
 

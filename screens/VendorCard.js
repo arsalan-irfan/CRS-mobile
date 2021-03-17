@@ -7,18 +7,19 @@ import {
   TouchableOpacity,
   Image
 } from "react-native";
+import { formatImageString } from '../helper/helper'
 
 export const VendorCard = ({ image, navigation, navigateTo, data }) => {
   console.log(data)
   return (
-    <TouchableOpacity onPress={() => { navigation.navigate(`${navigateTo}`, { categoryId: data.id, company: data.name }) }}>
+    <TouchableOpacity onPress={() => { navigation.navigate(`${navigateTo}`, { vendorId: data.id, company: `${data.firstName} ${data.lastName}` }) }}>
       <View
         style={{
           flex: 1,
           flexDirection: "row",
           width: "100%",
           height: 30,
-          height:"100%",
+          height: "100%",
           borderColor: "grey",
           borderWidth: 1,
           marginBottom: 10,
@@ -38,7 +39,7 @@ export const VendorCard = ({ image, navigation, navigateTo, data }) => {
             }}
             source={{
               uri:
-                image,
+                formatImageString(data.avatar),
             }}
           //activeOpacity={0.7}
           />
@@ -53,7 +54,7 @@ export const VendorCard = ({ image, navigation, navigateTo, data }) => {
               color: "black",
             }}
           >
-            {data.name}
+            {data.firstName} {data.lastName}
           </Text>
         </View>
 
