@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   TextInput,
+  Dimensions
 } from "react-native";
 
 import {
@@ -21,14 +22,14 @@ import { formatImageString } from '../helper/helper'
 
 export const AgencyDetail = ({ navigation, route }) => {
   const [agencyData, setAgencyData] = React.useState({});
-
+  const { width } = Dimensions.get('screen')
   React.useEffect(() => {
     const { data } = route.params
     setAgencyData(data);
   }, [route.params])
 
   return (
-    <ScrollView contentContainerStyle={{ alignItems: "center" }}>
+    <ScrollView contentContainerStyle={{}}>
       <Header
         // backgroundColor={"black"}
         // containerStyle={{ height: "10%" }}
@@ -49,7 +50,14 @@ export const AgencyDetail = ({ navigation, route }) => {
         ? (
           <>
             <View>
-              <View>
+              <View
+                style={
+                  {
+                    marginLeft:20,
+                    marginTop:20
+                  }
+                 }
+              >
                 <Image
                   source={{
                     uri:
@@ -60,6 +68,7 @@ export const AgencyDetail = ({ navigation, route }) => {
                     height: 100,
 
                     borderRadius: 100,
+                    marginLeft: width / 3
                   }}
                 />
                 <Text h4>{agencyData.middleName}</Text>
@@ -67,9 +76,9 @@ export const AgencyDetail = ({ navigation, route }) => {
               </View>
             </View>
 
-            <Text style={{ marginRight: 10 }}>Address: {agencyData.name}</Text>
+            <Text style={{ marginLeft: 20,marginRight:10,marginBottom:10 }}>Address: {agencyData.name}</Text>
 
-            <Text style={{ marginRight: 10 }}>Contact: {agencyData.username}</Text>
+            <Text style={{ marginLeft: 20,marginRight:10,marginBottom:10 }}>Contact: {agencyData.username}</Text>
             <Card>
               <Card.Title style={{ alignSelf: "flex-start" }}>Description</Card.Title>
               <Card.Divider />
@@ -84,7 +93,7 @@ export const AgencyDetail = ({ navigation, route }) => {
             </Card>
             <Card>
               <Card.Title style={{ alignSelf: "flex-start" }}>Skills</Card.Title>
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "row",flexWrap:"wrap" }}>
                 {agencyData.agencyProfiles[0].agencySkills.map(obj => {
                   return (
                     <Text
@@ -106,7 +115,7 @@ export const AgencyDetail = ({ navigation, route }) => {
               </View>
             </Card>
 
-            <Button buttonStyle={{ borderRadius: 20, marginTop: 50 }} onPress={() => { navigation.navigate('Proposal') }} title="Submit a Proposal" />
+            <Button buttonStyle={{ marginTop:20,width:width/2,marginLeft:width/4,marginBottom:30 }} onPress={() => { navigation.navigate('Proposal') }} title="Submit a Proposal" />
 
           </>
         )
