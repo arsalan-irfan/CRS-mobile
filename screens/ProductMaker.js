@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View, FlatList, ActivityIndicator,RefreshControl,ScrollView } from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, RefreshControl, ScrollView } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
@@ -23,8 +23,27 @@ const users = [
 export const ProductMaker = ({ navigation }) => {
   const [search, setSearch] = React.useState("");
   const [vendors, setVendors] = React.useState([]);
+  const [vendorsFiltered, setVendorsFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+
+
+  const onSearch = (text) => {
+    setSearch(text)
+    if (text.length !== 0) {
+      const temp = vendors.filter(obj => {
+        console.log("obj", obj);
+        return obj.firstName.includes(text) || obj.lastName.includes(text);
+      })
+      setVendorsFiltered(temp)
+    }
+    else {
+      setVendorsFiltered(vendors);
+    }
+
+  }
+
+
 
 
   useEffect(() => {
@@ -38,6 +57,7 @@ export const ProductMaker = ({ navigation }) => {
       let res = response.data
       setIsLoading(false)
       setVendors(res);
+      setVendorsFiltered(res);
     } catch (error) {
       setIsLoading(false)
       console.log(error.message);
@@ -68,7 +88,7 @@ export const ProductMaker = ({ navigation }) => {
       <SearchBar
         placeholder="Type Here..."
         lightTheme
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={(text) => onSearch(text)}
         autoCorrect={false}
         value={search}
       />
@@ -90,7 +110,7 @@ export const ProductMaker = ({ navigation }) => {
           : (
             <View>
               {
-                vendors.map((obj, index) => {
+                vendorsFiltered.map((obj, index) => {
                   return <VendorCard
                     category="lucky Cement"
                     image="https://www.lucky-cement.com/wp-content/uploads/2017/02/cropped-lucky-logo.png"

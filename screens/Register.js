@@ -170,9 +170,9 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
                 }}
               />
             </View>
-            <TouchableOpacity style={[styles.buttonContainer, styles.signupButton]}>
+            {/* <TouchableOpacity style={[styles.buttonContainer, styles.signupButton]}>
               <Text style={styles.btnText}>+ Upload Picture</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <View style={[styles.dropdownContainer]}>
               <Text style={{ fontSize: 18, color: 'black', borderBottomWidth: 2, borderBottomColor: 'grey' }}>Country</Text>

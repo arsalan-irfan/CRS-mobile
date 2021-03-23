@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 // import { Header } from "react-native-elements";
-import { StyleSheet, Text, View, FlatList,ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
@@ -13,7 +13,9 @@ import { apiDomain } from '../config'
 export const Agency = ({ navigation }) => {
   const [search, setSearch] = React.useState("");
   const [agencies, setAgencies] = React.useState([]);
-  const [isLoading,setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [agenciesFiltered, setAgenciesFiltered] = React.useState([]);
+
 
   useEffect(() => {
     fetchAgencies();
@@ -25,6 +27,7 @@ export const Agency = ({ navigation }) => {
       const response = await axios.get(`${apiDomain}/Agency`);
       let res = response.data
       setAgencies(res);
+      setAgenciesFiltered(res)
       setIsLoading(false)
     } catch (error) {
       setIsLoading(false)
@@ -32,6 +35,22 @@ export const Agency = ({ navigation }) => {
     }
 
   }
+
+  const onSearch = (text) => {
+    setSearch(text)
+    if (text.length !== 0) {
+      const temp = agencies.filter(obj => {
+        return obj.firstName.includes(text) || obj.lastName.includes(text);
+      })
+      setAgenciesFiltered(temp)
+    }
+    else {
+      setAgenciesFiltered(agencies);
+    }
+
+  }
+
+
   return (
     <View>
       <Header
@@ -53,29 +72,29 @@ export const Agency = ({ navigation }) => {
       <SearchBar
         placeholder="Type Here..."
         lightTheme
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={(text) => onSearch(text)}
         autoCorrect={false}
         value={search}
       />
       {isLoading
-      ?(
-        <View style={{flex:1,justifyContent:"center",alignItems:"center",marginTop:20}}>
-          <ActivityIndicator size="large" color="#03254c" />
-        </View>
-      )
-      :(
-        <View>
-        {
-          agencies.map((obj, index) => {
-            return <TimelineCard data={obj} navigation={navigation} navigateTo="AgencyDetail" key={index} />
-          })
-        }
+        ? (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+            <ActivityIndicator size="large" color="#03254c" />
+          </View>
+        )
+        : (
+          <View>
+            {
+              agenciesFiltered.map((obj, index) => {
+                return <TimelineCard data={obj} navigation={navigation} navigateTo="AgencyDetail" key={index} />
+              })
+            }
 
-        
-      </View>
-      )
+
+          </View>
+        )
       }
-      
+
     </View>
   );
 };

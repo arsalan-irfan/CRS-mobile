@@ -12,11 +12,26 @@ import { connect } from 'react-redux';
 const Home = ({ navigation, user, route }) => {
   const [search, setSearch] = React.useState("");
   const [agencies, setAgencies] = React.useState([]);
+  const [agenciesFiltered, setAgenciesFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   useEffect(() => {
     fetchAgencies();
     
   }, [])
+  const onSearch = (text) => {
+    setSearch(text)
+    if (text.length !== 0) {
+      const temp = agencies.filter(obj => {
+        return obj.name.includes(text);
+      })
+      setAgenciesFiltered(temp)
+    }
+    else {
+      setAgenciesFiltered(agencies);
+    }
+
+  }
+
   useEffect(() => {
     if (route && route.params && route.params.updatedJob) {
       const { updatedJob } = route.params
@@ -63,6 +78,7 @@ const Home = ({ navigation, user, route }) => {
       let res = response.data
       setIsLoading(false)
       setAgencies(res);
+      setAgenciesFiltered(res);
     } catch (error) {
       setIsLoading(false)
       console.log(error.message);
@@ -90,7 +106,7 @@ const Home = ({ navigation, user, route }) => {
       <SearchBar
         placeholder="Type Here..."
         lightTheme
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={(text) => onSearch(text)}
         autoCorrect={false}
         value={search}
       />
@@ -103,7 +119,7 @@ const Home = ({ navigation, user, route }) => {
         : (
           <View>
             {
-              agencies.map((obj, index) => {
+              agenciesFiltered.map((obj, index) => {
                 return <JobCard data={obj} navigation={navigation} navigateTo="JobDetail" key={index} />
               })
             }
