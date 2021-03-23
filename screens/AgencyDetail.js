@@ -115,7 +115,7 @@ export const AgencyDetail = ({ navigation, route }) => {
               </View>
             </Card>
 
-            <Button buttonStyle={{ marginTop:20,width:width/2,marginLeft:width/4,marginBottom:30 }} onPress={() => { navigation.navigate('Proposal') }} title="Submit a Proposal" />
+            <Button buttonStyle={{ marginTop:20,width:width/2,marginLeft:width/4,marginBottom:30 }} onPress={() => { navigation.navigate('Proposal',{agencyId:agencyData.id}) }} title="Submit a Proposal" />
 
           </>
         )

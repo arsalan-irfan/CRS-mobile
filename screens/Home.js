@@ -45,6 +45,7 @@ const Home = ({ navigation, user, route }) => {
           })
           temp[index].isAccepted = true;
           setAgencies(temp);
+          setAgenciesFiltered(temp);
           setIsLoading(false)
         }, 500)
 

@@ -18,6 +18,8 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { apiDomain } from '../config';
 import { connect } from 'react-redux'
+import Snackbar from '../Components/Snackbar'
+import {showSnackbar} from '../actions/snackbarActions'
 
 
 const ProposalSchema = Yup.object().shape({
@@ -32,29 +34,29 @@ const ProposalSchema = Yup.object().shape({
 
 
 
-const Proposal = ({ navigation, user }) => {
+const Proposal = ({ navigation, user, route,showSnackbar }) => {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [skills, setSkills] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-  const onSubmitHandler = async (values) => {
+  const onSubmitHandler = async (values, { resetForm }) => {
     try {
       setIsSubmitting(true);
       const { id, firstName, lastName } = user
       const { description, budget, title } = values
+     
       let reqbody = {
         "clientId": id,
         "title": title,
         "jobCategoryId": 1,
         "typeofProjectId": 3,
-        "budget": budget,
+        "budget": parseInt(budget),
         "additionalFiles": [],
         "jobDetails": [],
-  
+
         "jobProposals": [],
-  
+
         "name": `${firstName} ${lastName}`,
         "description": description
       }
@@ -63,14 +65,21 @@ const Proposal = ({ navigation, user }) => {
         temp.skillId = sid
         reqbody.jobDetails.push(temp);
       })
+      if (route && route.params && route.params.agencyId) {
+        reqbody.jobProposals.push({ ProfileId: route.params.agencyId });
+      }
       console.log("ReqBody:::", reqbody)
-      // const res = await axios.post(`${apiDomain}/`)
-      
+      const res = await axios.post(`${apiDomain}/Jobs`, reqbody)
+      console.log("Success", res.data);
+      resetForm({});
+      setSelectedSkills([]);
       setIsSubmitting(false);
-      
-    } catch (error) {
-      setIsSubmitting(false);
+      showSnackbar("Proposal Submitted Successfully !");
 
+    } catch (error) {
+      console.log("Failed", error);
+      setIsSubmitting(false);
+      showSnackbar("Proposal Submission Failed !");
     }
   }
 
@@ -107,6 +116,7 @@ const Proposal = ({ navigation, user }) => {
 
   return (
     <ScrollView>
+      <Snackbar />
       <Header
         // backgroundColor={"black"}
         // containerStyle={{ height: "10%" }}
@@ -139,9 +149,9 @@ const Proposal = ({ navigation, user }) => {
             <Formik
               enableReinitialize
               initialValues={{ title: "", description: "", budget: "" }}
-              onSubmit={values => { onSubmitHandler(values) }}
+              onSubmit={onSubmitHandler}
               validationSchema={ProposalSchema}>
-              {({ handleChange, handleBlur, handleSubmit, errors, touched, setFieldValue }) => (
+              {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
                 <View>
                   <Card>
 
@@ -156,12 +166,14 @@ const Proposal = ({ navigation, user }) => {
                       style={{ borderWidth: 1, borderColor: errors.title && touched.title ? "red" : "#C0C0C0", marginTop: 5, marginBottom: 10 }}
                       onChangeText={handleChange('title')}
                       onBlur={handleBlur('title')}
+                      value={values.title}
                     />
                     <Text style={{ fontWeight: "bold", fontSize: 16 }}>Description:</Text>
                     <TextInput
                       style={{ borderWidth: 1, borderColor: errors.description && touched.description ? "red" : "#C0C0C0", marginTop: 5, marginBottom: 10 }}
                       onChangeText={handleChange('description')}
                       onBlur={handleBlur('description')}
+                      value={values.description}
                     />
                     <Text style={{ fontWeight: "bold", fontSize: 16 }}>Budget:</Text>
                     <TextInput
@@ -169,6 +181,7 @@ const Proposal = ({ navigation, user }) => {
                       style={{ borderWidth: 1, borderColor: errors.budget && touched.budget ? "red" : "#C0C0C0", marginTop: 5, marginBottom: 10 }}
                       onChangeText={handleChange('budget')}
                       onBlur={handleBlur('budget')}
+                      value={values.budget}
                     />
                     <Text style={{ fontSize: 12, marginBottom: 10 }}>
                       *Select atleast 1 skill .
@@ -195,11 +208,20 @@ const Proposal = ({ navigation, user }) => {
                     />
                   </Card>
                   <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
-                    <Button
-                      title="Submit Proposal"
-                      disabled={selectedSkills.length === 0}
-                      onPress={() => { console.log("Errors", errors); handleSubmit() }}
-                    />
+
+                    {
+                      isSubmitting
+                        ?
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                          <ActivityIndicator size="large" color="#03254c" />
+                        </View>
+                        : <Button
+                          title="Submit Proposal"
+                          disabled={selectedSkills.length === 0}
+                          onPress={() => { console.log("Errors", errors); handleSubmit() }}
+                        />
+                    }
+
                   </View>
 
                 </View>
@@ -218,4 +240,4 @@ const mapStateToProps = state => ({
   user: state.authReducer.user
 })
 
-export default connect(mapStateToProps)(Proposal)
+export default connect(mapStateToProps,{showSnackbar})(Proposal)
