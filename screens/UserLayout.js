@@ -7,7 +7,7 @@ import CustomDrawerContent from "./CustomDrawerContent";
 
 import  Home  from "./Home";
 import { Agency } from "./Agency";
-import { Proposal } from "./Proposal";
+import  Proposal from "./Proposal";
 import { Settings } from "./Settings";
 import { Vendor } from "./Vendor";
 import { ProductMaker } from "./ProductMaker";
@@ -21,7 +21,7 @@ import { AgencyList } from "./AgencyList";
 import JobDetail from './JobDetail'
 
 import { connect } from 'react-redux';
-
+ 
 
 
 
