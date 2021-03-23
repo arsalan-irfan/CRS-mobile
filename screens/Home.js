@@ -4,25 +4,62 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
 import { Header, SearchBar } from "react-native-elements";
 // import { FlatList } from "react-native-gesture-handler";
-import { TimelineCard } from "../Components/TimelineCard";
+import { JobCard } from "../Components/JobCard";
 import axios from 'axios';
-import { apiDomain } from '../config'
+import { apiDomain } from '../config';
+import { connect } from 'react-redux';
 
-
-  ;
-export const Home = ({ navigation }) => {
+const Home = ({ navigation, user, route }) => {
   const [search, setSearch] = React.useState("");
   const [agencies, setAgencies] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
-
   useEffect(() => {
     fetchAgencies();
+    
   }, [])
+  useEffect(() => {
+    if (route && route.params && route.params.updatedJob) {
+      const { updatedJob } = route.params
+      console.log("Here::", updatedJob)
+      if (updatedJob) {
+        setIsLoading(true)
+        setTimeout(() => {
+          let temp = agencies;
+          let index = temp.findIndex(obj => {
+            return obj.id === updatedJob.id
+          })
+          temp[index].isAccepted = true;
+          setAgencies(temp);
+          setIsLoading(false)
+        }, 500)
+
+      }
+
+    }
+    if (route && route.params && route.params.deleteJob) {
+      const { deleteJob } = route.params
+      console.log("Here in Delete::", deleteJob)
+      if (deleteJob) {
+        setIsLoading(true)
+        setTimeout(() => {
+          let temp = agencies.filter(obj => {
+            return obj.id !== deleteJob.id
+          });
+
+          setAgencies(temp);
+          setIsLoading(false)
+        }, 500)
+
+      }
+
+    }
+
+  }, [route])
 
   const fetchAgencies = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${apiDomain}/Agency`);
+      const response = await axios.get(`${apiDomain}/JobInvitations/Search?searchbyprofileid=${user.id}`);
       let res = response.data
       setIsLoading(false)
       setAgencies(res);
@@ -67,7 +104,7 @@ export const Home = ({ navigation }) => {
           <View>
             {
               agencies.map((obj, index) => {
-                return <TimelineCard data={obj} navigation={navigation} navigateTo="AgencyDetail" key={index} />
+                return <JobCard data={obj} navigation={navigation} navigateTo="JobDetail" key={index} />
               })
             }
 
@@ -86,3 +123,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
+
+const mapStateToProps = (state) => ({
+  user: state.authReducer.user
+})
+
+export default connect(mapStateToProps)(Home)

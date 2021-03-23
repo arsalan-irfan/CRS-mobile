@@ -5,28 +5,32 @@ import { View, Text, Image, ActivityIndicator, AsyncStorage } from "react-native
 import CustomDrawerContent from "./CustomDrawerContent";
 
 
-import { Home } from "./Home";
+import  Home  from "./Home";
 import { Agency } from "./Agency";
 import { Proposal } from "./Proposal";
 import { Settings } from "./Settings";
 import { Vendor } from "./Vendor";
 import { ProductMaker } from "./ProductMaker";
 
-import  Products  from "./Products";
-import ProductDescription  from "./ProductDescription";
-import  Checkout from "./Checkout";
+import Products from "./Products";
+import ProductDescription from "./ProductDescription";
+import Checkout from "./Checkout";
 import { AgencyDetail } from "./AgencyDetail";
 import { HomeDetail } from "./HomeDetail";
 import { AgencyList } from "./AgencyList";
+import JobDetail from './JobDetail'
 
 import { connect } from 'react-redux';
+
+
+
 
 const Drawer = createDrawerNavigator();
 
 const UserLayout = ({ user }) => {
     useEffect(() => {
         // getAuthenticatedUser();
-    },[])  
+    }, [])
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -158,6 +162,10 @@ const UserLayout = ({ user }) => {
                 name="HomeDetail"
                 component={HomeDetail}
             />
+            <Drawer.Screen
+                name="JobDetail"
+                component={JobDetail}
+            />
         </Drawer.Navigator>
     )
 }
@@ -165,4 +173,4 @@ const mapStateToProps = state => ({
     user: state.authReducer.user
 })
 
-export default connect(mapStateToProps, {  })(UserLayout)
+export default connect(mapStateToProps, {})(UserLayout)
