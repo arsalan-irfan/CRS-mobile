@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,11 +12,15 @@ import {
   ScrollView,
   ActivityIndicator
 } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from "react-redux";
 import { createUser } from '../actions/authActions'
 import Snackbar from '../Components/Snackbar'
+import { Avatar } from 'react-native-elements'
+import { showSnackbar } from "../actions/snackbarActions";
+
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string().required('Required'),
@@ -48,7 +52,9 @@ const SignupSchema = Yup.object().shape({
 
 
 //import { ScrollView } from "react-native-gesture-handler";
-const Register = ({ navigation, cities, countries, states, createUser, isLoading }) => {
+const Register = ({ navigation, cities, countries, states, createUser, isLoading, showSnackbar }) => {
+
+  const [profilePicture, setProfilePicture] = useState({ uri: "https://iptc.org/wp-content/uploads/2018/05/avatar-anonymous-300x300.png" })
   let reqbody = {
     "FirstName": "string",
     "LastName": "string",
@@ -68,11 +74,31 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
   const [country, setCountry] = React.useState("Pakistan");
   const [city, setCity] = React.useState("Karachi");
   const [state, setState] = React.useState("Sindh");
+  const [uploadingImage, setUploadingImage] = React.useState(false);
 
   const [filteredCountries, setCountries] = React.useState([]);
   const [filteredCities, setCities] = React.useState([]);
   const [filteredStates, setStates] = React.useState([]);
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: true,
+        base64: true
+      });
+      if (!result.cancelled) {
+        const imageNames = result.uri.split('/');
+        const fileName = imageNames[imageNames.length - 1];
+        result.fileName = fileName
+        setProfilePicture(result)
+      }
+      console.log(result.uri)
 
+    } catch (error) {
+      console.log("Error While Picking Image", error)
+    }
+  };
   React.useEffect(() => {
     setCountries(countries);
     setCities(cities)
@@ -81,15 +107,51 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
 
   const onSubmitHandler = (values) => {
     const { firstName, lastName, email, password, address, phoneNumber, country, city, state } = values
-    let body = reqbody;
-    body.FirstName = firstName;
-    body.LastName = lastName;
-    body.EmailAddress = email;
-    body.Password = password;
-    body.Description = address;
-    body.Name = phoneNumber;
+    if (profilePicture.base64) {
+      setUploadingImage(true)
+      let body = reqbody;
+      body.FirstName = firstName;
+      body.LastName = lastName;
+      body.EmailAddress = email;
+      body.Password = password;
+      body.Description = address;
+      body.Name = phoneNumber;
+      let base64Img = `data:image/jpg;base64,${profilePicture.base64}`
 
-    createUser(body, navigation)
+      //Add your cloud name
+      let apiUrl = 'https://api.cloudinary.com/v1_1/dfczdwsx4/image/upload';
+
+      let data = {
+        "file": base64Img,
+        "upload_preset": "ml_default",
+      }
+
+      fetch(apiUrl, {
+        body: JSON.stringify(data),
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'POST',
+      }).then(async r => {
+        let data = await r.json()
+        console.log("Image Path", data.secure_url);
+        body.Avatar = data.secure_url;
+        setUploadingImage(false)
+
+        createUser(body, navigation)
+
+        // return data.secure_url
+      }).catch(
+        err => {
+          setUploadingImage(true)
+          showSnackbar("Error While Uploading Image")
+          console.log(err)
+        })
+    } else {
+      showSnackbar("Please Select Profile Picture!")
+    }
+
+
 
   }
 
@@ -315,8 +377,26 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
                 source={{ uri: "https://img.icons8.com/nolan/40/000000/key.png" }}
               />
             </View>
+            <View style={{ flex: 1 }}>
+              <Avatar
+                size="xlarge"
+                rounded
+                source={{
+                  uri:
+                    profilePicture.uri,
+                }}
+              >
+                <Avatar.Accessory onPress={() => { pickImage() }}
+                  iconStyle={{ fontSize: 20 }} style={{ height: 40, width: 40, backgroundColor: '#2A83F7', borderRadius: 50 }} >
+
+                </Avatar.Accessory>
+
+              </Avatar>
+
+
+            </View>
             {
-              isLoading
+              isLoading || uploadingImage
                 ? (
                   <ActivityIndicator size="large" color="#03254c" />
                 )
@@ -324,6 +404,7 @@ const Register = ({ navigation, cities, countries, states, createUser, isLoading
                   <TouchableOpacity
                     style={[styles.buttonContainer, styles.signupButton]}
                     onPress={handleSubmit}
+
                   >
                     <Text style={styles.btnText}>Register</Text>
                   </TouchableOpacity>
@@ -349,7 +430,7 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { createUser })(Register)
+export default connect(mapStateToProps, { createUser, showSnackbar })(Register)
 
 
 const styles = StyleSheet.create({

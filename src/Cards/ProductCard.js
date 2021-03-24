@@ -19,7 +19,7 @@ export const ProductCard = ({ navigation, data, company,addToCart,removeFromCart
   return (
 
     <Card containerStyle={{
-      width: 160,
+      width: 140,
       height: 450,
       marginTop: 10
     }}>

@@ -30,6 +30,7 @@ import { connect } from 'react-redux'
 
 const JobDetail = ({ navigation, route, showSnackbar }) => {
     const [agencyData, setAgencyData] = React.useState({});
+    const [job, setJob] = React.useState({});
     const { width } = Dimensions.get('screen')
     const [isLoading, setIsLoading] = React.useState(true);
     const { data } = route.params
@@ -38,8 +39,16 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
         try {
             let res = await axios.get(`${apiDomain}/Agency/Search?search=${data.name}`);
 
-            setIsLoading(false)
             setAgencyData(res.data[0]);
+            if (res.data[0]) {
+                let res1 = await axios.get(`${apiDomain}/Jobs/${data.jobId}`);
+                setJob(res1.data)
+                setIsLoading(false)
+            }
+            else {
+                setIsLoading(false)
+            }
+
         } catch (error) {
             console.log(error);
             setIsLoading(false)
@@ -48,7 +57,7 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
     }
 
     React.useEffect(() => {
-        console.log("Data:::", data)
+        console.log("Data:::", data.jobId )
         fetchJobDetails(data);
     }, [route.params])
 
@@ -158,16 +167,12 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
 
                                 </Card>
                                 <Card>
-                                    <Card.Title style={{ alignSelf: "flex-start" }}>About Company</Card.Title>
+                                    <Card.Title style={{ alignSelf: "flex-start" }}>Job Requirement</Card.Title>
                                     <Card.Divider />
                                     <Text>
-                                        {agencyData.description}
+                                        {job.description}
                                     </Text>
-                                    <Text style={{ fontWeight: "bold" }}>Specialities</Text>
-
-                                    <Text style={{ fontWeight: "bold" }}>
-                                        Motivating,asdjasd,asdasdsa, asd asd asd as das d asd{" "}
-                                    </Text>
+                                    
                                 </Card>
                                 <Card>
                                     <Card.Title style={{ alignSelf: "flex-start" }}>Skills</Card.Title>
@@ -202,7 +207,7 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
                                         )
                                         : (
                                             <View style={{ marginTop: 20, marginBottom: 30, flex: 1, flexDirection: "row", justifyContent: "center" }}>
-                                                <Button disabled={data.isAccepted} buttonStyle={{ marginTop: 20, marginRight: 10, width: width / 3, backgroundColor: "green" }} onPress={() => { onAccept(); }} title={data.isAccepted?"Accepted !":"Accept"} />
+                                                <Button disabled={data.isAccepted} buttonStyle={{ marginTop: 20, marginRight: 10, width: width / 3, backgroundColor: "green" }} onPress={() => { onAccept(); }} title={data.isAccepted ? "Accepted !" : "Accept"} />
                                                 {
                                                     data.isAccepted ? <></> : (
                                                         <Button buttonStyle={{ marginTop: 20, width: width / 3, backgroundColor: "red" }} color="red" onPress={() => { onReject(); }} title="Reject" />

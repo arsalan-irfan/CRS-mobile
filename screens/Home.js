@@ -15,9 +15,10 @@ const Home = ({ navigation, user, route }) => {
   const [agenciesFiltered, setAgenciesFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   useEffect(() => {
-    fetchAgencies();
-    
-  }, [])
+    console.log("Here");
+    if(user && user.id)
+      fetchAgencies();
+  }, [user])
   const onSearch = (text) => {
     setSearch(text)
     if (text.length !== 0) {

@@ -12,28 +12,20 @@ import { connect } from 'react-redux'
 import { addProduct, emptyCart, removeProduct } from '../actions/cartActions'
 
 
-const Products = ({ navigation, route, cartItems, addProduct, removeProduct,emptyCart }) => {
+const Products = ({ navigation, route, cartItems, addProduct, removeProduct, emptyCart }) => {
+
   const [search, setSearch] = React.useState("");
   const { vendorId, company } = route.params;
   const [products, setProducts] = React.useState([]);
+  const [productsFiltered, setProductsFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  
 
   const [backPressEnabled, setBackPressEnabled] = React.useState(true)
-
-
-
-
 
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        // if (backPressEnabled) {
-
-        //   return true;
-        // } else {
-        //   return false;
-        // }
+        
         console.log("Hi")
         emptyCart();
         return false
@@ -53,7 +45,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
       subtotal: prod.productPriceAffections[1].price,
       price: prod.productPriceAffections[1].price,
       name: prod.name,
-      description:"For Construction"
+      description: "For Construction"
     }
     addProduct(obj);
   }
@@ -64,7 +56,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
       price: prod.productPriceAffections[1].price,
       subtotal: prod.productPriceAffections[1].price,
       name: prod.name,
-      description:"For Construction"
+      description: "For Construction"
     }
     removeProduct(obj);
   }
@@ -79,7 +71,19 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
     else
       return true
   }
+  const onSearch = (text) => {
+    setSearch(text)
+    if (text.length !== 0) {
+      const temp = products.filter(obj => {
+        return obj.name.includes(text);
+      })
+      setProductsFiltered(temp)
+    }
+    else {
+      setProductsFiltered(products);
+    }
 
+  }
 
   const fetchProducts = async () => {
     try {
@@ -91,14 +95,13 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
       })
       setIsLoading(false)
       setProducts(temp);
+      setProductsFiltered(temp)
     } catch (error) {
       setIsLoading(false)
       console.log(error.message);
     }
 
   }
-
-
 
   React.useEffect(() => {
     fetchProducts();
@@ -115,11 +118,6 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
     }, 1000)
   }, [cartItems || cartItems.length || totalPrice])
 
-
-
-
-
-
   return (
     <ScrollView>
       <Header
@@ -135,14 +133,14 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
         centerComponent={
           <Text style={{ fontSize: 18, color: "#fff" }}>ConstructTo</Text>
         }
-        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={() => { navigation.navigate('Checkout',{vendorId}) }} />}
+        rightComponent={<Icon name="cart-plus" type="font-awesome" color='white' onPress={() => { navigation.navigate('Checkout', { vendorId }) }} />}
       //        rightComponent={{ icon: "home", color: "#fff" }}
       />
 
       <SearchBar
         placeholder="Type Here..."
         lightTheme
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={(text) => onSearch(text)}
         autoCorrect={false}
         value={search}
       />
@@ -156,7 +154,7 @@ const Products = ({ navigation, route, cartItems, addProduct, removeProduct,empt
           : (
             <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
               {
-                products.map((obj, index) => {
+                productsFiltered.map((obj, index) => {
                   return <ProductCard
                     company={company}
                     navigation={navigation}
@@ -190,4 +188,4 @@ const mapStateToProps = state => ({
   totalPrice: state.cartReducer.totalPrice
 })
 
-export default connect(mapStateToProps, { addProduct, removeProduct,emptyCart })(Products)
+export default connect(mapStateToProps, { addProduct, removeProduct, emptyCart })(Products)

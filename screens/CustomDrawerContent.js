@@ -55,7 +55,7 @@ function Drawer(props) {
           }}
           source={{
             uri:
-              "https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png",
+              props.user?props.user.avatar:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png",
           }}
         />
         <Text
