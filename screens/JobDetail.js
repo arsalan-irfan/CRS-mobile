@@ -69,7 +69,7 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
             reqBody.isAccepted = true;
             let res = await axios.put(`${apiDomain}/JobInvitations/${data.id}`, reqBody);
             console.log("Success:::", res.data);
-            navigation.navigate("Home", { updatedJob: res.data })
+            navigation.navigate("Home", { updatedJob: data })
             showSnackbar("You have accept the job")
             setLoading(false)
         } catch (error) {
@@ -86,11 +86,11 @@ const JobDetail = ({ navigation, route, showSnackbar }) => {
             let res = await axios.delete(`${apiDomain}/JobInvitations/${data.id}`);
             console.log("Success:::", res.data);
             navigation.navigate("Home", { deleteJob: data })
-            showSnackbar("You have accept the job")
+            showSnackbar("You have rejected the job")
             setLoading(false)
         } catch (error) {
             console.log("Error:::", error.message)
-            showSnackbar("Error While Accepting Job")
+            showSnackbar("Error While Rejecting Job")
             setLoading(false)
 
         }

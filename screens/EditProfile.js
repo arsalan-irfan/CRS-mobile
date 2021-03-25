@@ -6,6 +6,9 @@ import * as Yup from 'yup';
 import { connect } from "react-redux";
 import Snackbar from '../Components/Snackbar'
 import { updateUser } from '../actions/authActions'
+import { Avatar } from 'react-native-elements'
+import * as ImagePicker from 'expo-image-picker';
+import {showSnackbar} from '../actions/snackbarActions'
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string().required('Required'),
@@ -21,9 +24,36 @@ const ProfileSchema = Yup.object().shape({
 });
 
 
-const EditProfile = ({ navigation, user, updateUser,updatingUser }) => {
+const EditProfile = ({ navigation, user, updateUser, updatingUser,showSnackbar }) => {
   const [value, onChangeText] = React.useState("Useless Placeholder");
+  const [uploadingImage, setUploadingImage] = React.useState(false);
+  const [profilePicture, setProfilePicture] = React.useState({ uri: "https://iptc.org/wp-content/uploads/2018/05/avatar-anonymous-300x300.png" })
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: true,
+        base64: true
+      });
+      if (!result.cancelled) {
+        const imageNames = result.uri.split('/');
+        const fileName = imageNames[imageNames.length - 1];
+        result.fileName = fileName
+        setProfilePicture(result)
+      }
+      console.log(result.uri)
 
+    } catch (error) {
+      console.log("Error While Picking Image", error)
+    }
+  };
+
+  React.useEffect(() => {
+    setProfilePicture({
+      uri: user.avatar
+    })
+  }, [user])
 
   const onSubmitHandler = (values) => {
 
@@ -48,8 +78,42 @@ const EditProfile = ({ navigation, user, updateUser,updatingUser }) => {
     body.password = user.password;
     body.description = address;
     body.name = phoneNumber;
-    console.log(body)
-    updateUser(body)
+    body.avatar = user.avatar;
+    if (profilePicture.base64) {
+      setUploadingImage(true);
+      let base64Img = `data:image/jpg;base64,${profilePicture.base64}`;
+      let apiUrl = 'https://api.cloudinary.com/v1_1/dfczdwsx4/image/upload';
+
+      let data = {
+        "file": base64Img,
+        "upload_preset": "ml_default",
+      }
+
+      fetch(apiUrl, {
+        body: JSON.stringify(data),
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'POST',
+      }).then(async r => {
+        let data = await r.json()
+        console.log("Image Path", data.secure_url);
+        body.Avatar = data.secure_url;
+        setUploadingImage(false)
+
+        updateUser(body, navigation)
+
+        // return data.secure_url
+      }).catch(
+        err => {
+          setUploadingImage(true)
+          showSnackbar("Error While Uploading Image")
+          console.log(err)
+        })
+    }
+    else {
+      updateUser(body)
+    }
 
   }
 
@@ -153,14 +217,30 @@ const EditProfile = ({ navigation, user, updateUser,updatingUser }) => {
               >
                 Avatar
               </Text>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <Avatar
+                  size="xlarge"
+                  rounded
+                  source={{
+                    uri:
+                      profilePicture.uri,
+                  }}
+                >
+                  <Avatar.Accessory onPress={() => { pickImage() }}
+                    iconStyle={{ fontSize: 20 }} style={{ height: 40, width: 40, backgroundColor: '#2A83F7', borderRadius: 50 }} >
+
+                  </Avatar.Accessory>
+
+                </Avatar>
+
+              </View>
               {
-                updatingUser
+                updatingUser || uploadingImage
                   ? (
                     <ActivityIndicator size="large" color="#03254c" />
                   )
                   : (
                     <>
-                      <Button title="+ Upload" />
 
                       <Button
                         title="Save"
@@ -185,7 +265,7 @@ const EditProfile = ({ navigation, user, updateUser,updatingUser }) => {
 
 const mapStateToProps = state => ({
   user: state.authReducer.user,
-  updatingUser:state.authReducer.updatingUser
+  updatingUser: state.authReducer.updatingUser
 })
-export default connect(mapStateToProps, { updateUser })(EditProfile)
+export default connect(mapStateToProps, { updateUser,showSnackbar })(EditProfile)
 

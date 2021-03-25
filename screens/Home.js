@@ -14,11 +14,23 @@ const Home = ({ navigation, user, route }) => {
   const [agencies, setAgencies] = React.useState([]);
   const [agenciesFiltered, setAgenciesFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  
   useEffect(() => {
     console.log("Here");
+    console.log("Route1",route)
+    
     if(user && user.id)
       fetchAgencies();
-  }, [user])
+
+    }, [user || route])
+  
+  useEffect(()=>{
+    if(user && user.id)
+      fetchAgencies();
+
+
+  },[route])
+  
   const onSearch = (text) => {
     setSearch(text)
     if (text.length !== 0) {
@@ -33,45 +45,45 @@ const Home = ({ navigation, user, route }) => {
 
   }
 
-  useEffect(() => {
-    if (route && route.params && route.params.updatedJob) {
-      const { updatedJob } = route.params
-      console.log("Here::", updatedJob)
-      if (updatedJob) {
-        setIsLoading(true)
-        setTimeout(() => {
-          let temp = agencies;
-          let index = temp.findIndex(obj => {
-            return obj.id === updatedJob.id
-          })
-          temp[index].isAccepted = true;
-          setAgencies(temp);
-          setAgenciesFiltered(temp);
-          setIsLoading(false)
-        }, 500)
+  // useEffect(() => {
+  //   if (route && route.params && route.params.updatedJob) {
+  //     const { updatedJob } = route.params
+  //     console.log("Here::", updatedJob)
+  //     if (updatedJob) {
+  //       setIsLoading(true)
+  //       setTimeout(() => {
+  //         let temp = agencies;
+  //         let index = temp.findIndex(obj => {
+  //           return obj.id === updatedJob.id
+  //         })
+  //         temp[index].isAccepted = true;
+  //         setAgencies(temp);
+  //         setAgenciesFiltered(temp);
+  //         setIsLoading(false)
+  //       }, 500)
 
-      }
+  //     }
 
-    }
-    if (route && route.params && route.params.deleteJob) {
-      const { deleteJob } = route.params
-      console.log("Here in Delete::", deleteJob)
-      if (deleteJob) {
-        setIsLoading(true)
-        setTimeout(() => {
-          let temp = agencies.filter(obj => {
-            return obj.id !== deleteJob.id
-          });
+  //   }
+  //   if (route && route.params && route.params.deleteJob) {
+  //     const { deleteJob } = route.params
+  //     console.log("Here in Delete::", deleteJob)
+  //     if (deleteJob) {
+  //       setIsLoading(true)
+  //       setTimeout(() => {
+  //         let temp = agencies.filter(obj => {
+  //           return obj.id !== deleteJob.id
+  //         });
 
-          setAgencies(temp);
-          setIsLoading(false)
-        }, 500)
+  //         setAgencies(temp);
+  //         setIsLoading(false)
+  //       }, 500)
 
-      }
+  //     }
 
-    }
+  //   }
 
-  }, [route])
+  // }, [route||route.params])
 
   const fetchAgencies = async () => {
     try {
