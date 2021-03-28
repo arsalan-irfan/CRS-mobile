@@ -164,8 +164,13 @@ const UserLayout = ({ user }) => {
             />
             <Drawer.Screen
                 name="JobDetail"
-                component={JobDetail}
-            />
+                options={{
+                    drawerLabel: () => null,
+                    title: null,
+                    drawerIcon: () => null
+                }}     component={JobDetail}
+           
+           />
         </Drawer.Navigator>
     )
 }

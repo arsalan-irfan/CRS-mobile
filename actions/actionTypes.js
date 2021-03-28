@@ -29,6 +29,12 @@ export const Show_Snackbar = "Show_Snackbar";
 export const Fetch_General_Data_Success = "Fetch_General_Data_Success"
 export const Fetch_General_Data_Failed = "Fetch_General_Data_Failed"
 
+
+export const Toggle_Utils_Loading = "Toggle_Utils_Loading"
+
+
+
+
 // Cart-Types:
 
 export const Add_Product = "Add_Product";

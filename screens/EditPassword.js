@@ -37,7 +37,7 @@ const EditPassword = ({ navigation, user, updateUser, updatingUser, showSnackbar
       description: "User",
       name: "",
     }
-    const { firstName, lastName, description,name } = user
+    const { firstName, lastName, description,name,avatar } = user
     const { password, oldPassword } = values
     if (user.password == oldPassword) {
       body.id = user.id;
@@ -47,9 +47,11 @@ const EditPassword = ({ navigation, user, updateUser, updatingUser, showSnackbar
       body.password = password;
       body.description = description;
       body.name = name;
-      console.log(body)
+      body.avatar=avatar
+
       updateUser(body)
       resetForm({values:initialValues})
+      
     } else {
       showSnackbar("old password is invalid !")
     }

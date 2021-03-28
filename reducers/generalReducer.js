@@ -1,11 +1,11 @@
-import { Fetch_General_Data_Success, Fetch_General_Data_Failed } from '../actions/actionTypes'
+import { Fetch_General_Data_Success, Fetch_General_Data_Failed, Toggle_Utils_Loading } from '../actions/actionTypes'
 
 
 const initialState = {
     countries: [],
     cities: [],
     states: [],
-    utilsLoaded:false
+    utilsLoaded: false
 };
 
 export default function (state = initialState, action) {
@@ -14,7 +14,7 @@ export default function (state = initialState, action) {
         case Fetch_General_Data_Failed:
             return {
                 ...state,
-                utilsLoaded:true
+                utilsLoaded: true
             }
         case Fetch_General_Data_Success:
             return {
@@ -22,7 +22,12 @@ export default function (state = initialState, action) {
                 countries: payload.countries,
                 cities: payload.cities,
                 states: payload.states,
-                utilsLoaded:true
+                utilsLoaded: true
+            }
+        case Toggle_Utils_Loading:
+            return {
+                ...state,
+                utilsLoaded: !state.utilsLoaded
             }
         default:
             return state;

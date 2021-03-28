@@ -8,7 +8,7 @@ import Snackbar from '../Components/Snackbar'
 import { updateUser } from '../actions/authActions'
 import { Avatar } from 'react-native-elements'
 import * as ImagePicker from 'expo-image-picker';
-import {showSnackbar} from '../actions/snackbarActions'
+import { showSnackbar } from '../actions/snackbarActions'
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string().required('Required'),
@@ -24,7 +24,7 @@ const ProfileSchema = Yup.object().shape({
 });
 
 
-const EditProfile = ({ navigation, user, updateUser, updatingUser,showSnackbar }) => {
+const EditProfile = ({ navigation, user, updateUser, updatingUser, showSnackbar }) => {
   const [value, onChangeText] = React.useState("Useless Placeholder");
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [profilePicture, setProfilePicture] = React.useState({ uri: "https://iptc.org/wp-content/uploads/2018/05/avatar-anonymous-300x300.png" })
@@ -50,9 +50,12 @@ const EditProfile = ({ navigation, user, updateUser, updatingUser,showSnackbar }
   };
 
   React.useEffect(() => {
-    setProfilePicture({
-      uri: user.avatar
-    })
+    if (user && user.id) {
+      setProfilePicture({
+        uri: user.avatar
+      })
+    }
+
   }, [user])
 
   const onSubmitHandler = (values) => {
@@ -121,145 +124,153 @@ const EditProfile = ({ navigation, user, updateUser, updatingUser,showSnackbar }
 
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <Snackbar />
-      <Header
-        // backgroundColor={"black"}
-        // containerStyle={{ height: "10%" }}
-        leftComponent={{
-          icon: "menu",
-          color: "#fff",
-          onPress: () => {
-            navigation.toggleDrawer();
-          },
-        }}
-        centerComponent={
-          <Text style={{ fontSize: 18, color: "#fff" }}>Edit Profile</Text>
-        }
+    <>
+      {user && user.id
+        ? (<ScrollView style={{ flex: 1 }}>
+          <Snackbar />
+          <Header
+            // backgroundColor={"black"}
+            // containerStyle={{ height: "10%" }}
+            leftComponent={{
+              icon: "menu",
+              color: "#fff",
+              onPress: () => {
+                navigation.toggleDrawer();
+              },
+            }}
+            centerComponent={
+              <Text style={{ fontSize: 18, color: "#fff" }}>Edit Profile</Text>
+            }
 
-      //        rightComponent={{ icon: "home", color: "#fff" }}
-      />
+          //        rightComponent={{ icon: "home", color: "#fff" }}
+          />
 
-      <View
-        style={{
-          width: "80%",
-          marginTop: 50,
-          alignSelf: "center",
-          borderWidth: 1,
-          borderBottomWidth: 1, borderColor: "grey",
-          padding: 20,
-        }}
-      >
-        <Formik
-          enableReinitialize
-          initialValues={{ firstName: user.firstName, lastName: user.lastName, address: user.description, phoneNumber: user.name, }}
-          onSubmit={values => { onSubmitHandler(values) }}
-          validationSchema={ProfileSchema}>
-          {({ handleChange, handleBlur, handleSubmit, errors, touched, setFieldValue, values }) => (
-            <>
+          <View
+            style={{
+              width: "80%",
+              marginTop: 50,
+              alignSelf: "center",
+              borderWidth: 1,
+              borderBottomWidth: 1, borderColor: "grey",
+              padding: 20,
+            }}
+          >
+            <Formik
+              enableReinitialize
+              initialValues={{ firstName: user.firstName, lastName: user.lastName, address: user.description, phoneNumber: user.name, }}
+              onSubmit={values => { onSubmitHandler(values) }}
+              validationSchema={ProfileSchema}>
+              {({ handleChange, handleBlur, handleSubmit, errors, touched, setFieldValue, values }) => (
+                <>
 
-              <Input
-                label="First Name"
-                value={values.firstName}
-                onChangeText={handleChange('firstName')}
-                onBlur={handleBlur('firstName')}
-                style={{ borderBottomWidth: 1, borderColor: errors.firstName ? "red" : "black" }}
-              />
+                  <Input
+                    label="First Name"
+                    value={values.firstName}
+                    onChangeText={handleChange('firstName')}
+                    onBlur={handleBlur('firstName')}
+                    style={{ borderBottomWidth: 1, borderColor: errors.firstName ? "red" : "black" }}
+                  />
 
-              <Input label="Last Name"
-                value={values.lastName}
-                onChangeText={handleChange('lastName')}
-                onBlur={handleBlur('lastName')}
-                style={{ borderBottomWidth: 1, borderColor: errors.lastName ? "red" : "black" }}
-              />
-              <Input
-                label="Contact Number"
-                keyboardType="numeric"
-                value={values.phoneNumber}
-                onChangeText={handleChange('phoneNumber')}
-                onBlur={handleBlur('phoneNumber')}
-                style={{ borderBottomWidth: 1, borderColor: errors.phoneNumber ? "red" : "black" }}
-              />
-              <View style={{ marginLeft: 5 }}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 16,
-                    marginBottom: 10,
-                    color: "grey",
-                  }}
-                >
-                  Address
+                  <Input label="Last Name"
+                    value={values.lastName}
+                    onChangeText={handleChange('lastName')}
+                    onBlur={handleBlur('lastName')}
+                    style={{ borderBottomWidth: 1, borderColor: errors.lastName ? "red" : "black" }}
+                  />
+                  <Input
+                    label="Contact Number"
+                    keyboardType="numeric"
+                    value={values.phoneNumber}
+                    onChangeText={handleChange('phoneNumber')}
+                    onBlur={handleBlur('phoneNumber')}
+                    style={{ borderBottomWidth: 1, borderColor: errors.phoneNumber ? "red" : "black" }}
+                  />
+                  <View style={{ marginLeft: 5 }}>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 16,
+                        marginBottom: 10,
+                        color: "grey",
+                      }}
+                    >
+                      Address
                 </Text>
-                <TextInput
-                  style={{
-                    height: 40,
-                    borderBottomWidth: 1, borderColor: "grey",
-                    borderBottomWidth: 0.5,
-                    color: "grey",
-                    borderBottomWidth: 1, borderColor: errors.address ? "red" : "black"
-                  }}
-                  onChangeText={(text) => onChangeText(text)}
-                  value={values.address}
-                  onChangeText={handleChange('address')}
-                  onBlur={handleBlur('address')}
+                    <TextInput
+                      style={{
+                        height: 40,
+                        borderBottomWidth: 1, borderColor: "grey",
+                        borderBottomWidth: 0.5,
+                        color: "grey",
+                        borderBottomWidth: 1, borderColor: errors.address ? "red" : "black"
+                      }}
+                      onChangeText={(text) => onChangeText(text)}
+                      value={values.address}
+                      onChangeText={handleChange('address')}
+                      onBlur={handleBlur('address')}
 
-                />
-              </View>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  marginBottom: 10,
-                  color: "grey",
-                  marginTop: 20,
-                }}
-              >
-                Avatar
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 16,
+                      marginBottom: 10,
+                      color: "grey",
+                      marginTop: 20,
+                    }}
+                  >
+                    Avatar
               </Text>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Avatar
-                  size="xlarge"
-                  rounded
-                  source={{
-                    uri:
-                      profilePicture.uri,
-                  }}
-                >
-                  <Avatar.Accessory onPress={() => { pickImage() }}
-                    iconStyle={{ fontSize: 20 }} style={{ height: 40, width: 40, backgroundColor: '#2A83F7', borderRadius: 50 }} >
+                  <View style={{ flex: 1, alignItems: "center" }}>
+                    <Avatar
+                      size="xlarge"
+                      rounded
+                      source={{
+                        uri:
+                          profilePicture.uri,
+                      }}
+                    >
+                      <Avatar.Accessory onPress={() => { pickImage() }}
+                        iconStyle={{ fontSize: 20 }} style={{ height: 40, width: 40, backgroundColor: '#2A83F7', borderRadius: 50 }} >
 
-                  </Avatar.Accessory>
+                      </Avatar.Accessory>
 
-                </Avatar>
+                    </Avatar>
 
-              </View>
-              {
-                updatingUser || uploadingImage
-                  ? (
-                    <ActivityIndicator size="large" color="#03254c" />
-                  )
-                  : (
-                    <>
+                  </View>
+                  {
+                    updatingUser || uploadingImage
+                      ? (
+                        <ActivityIndicator size="large" color="#03254c" />
+                      )
+                      : (
+                        <>
 
-                      <Button
-                        title="Save"
-                        buttonStyle={{ marginTop: 20 }}
-                        onPress={handleSubmit}
-                      />
-                    </>
-                  )
+                          <Button
+                            title="Save"
+                            buttonStyle={{ marginTop: 20 }}
+                            onPress={handleSubmit}
+                          />
+                        </>
+                      )
 
-              }
+                  }
 
-            </>
-          )}
-        </Formik>
+                </>
+              )}
+            </Formik>
 
 
 
-      </View>
-    </ScrollView>
+          </View>
+        </ScrollView>
+        )
+        : (
+          <View></View>
+        )
+      }
+    </>
   );
 };
 
@@ -267,5 +278,5 @@ const mapStateToProps = state => ({
   user: state.authReducer.user,
   updatingUser: state.authReducer.updatingUser
 })
-export default connect(mapStateToProps, { updateUser,showSnackbar })(EditProfile)
+export default connect(mapStateToProps, { updateUser, showSnackbar })(EditProfile)
 

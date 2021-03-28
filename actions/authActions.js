@@ -1,4 +1,4 @@
-import { User_Fetched_Failed, User_Fetched_Success, User_Login_Success, Create_User_Failed, Create_User_Success, User_Loading, User_Logout, Update_User_Success, Update_User_Failed, Updating_User,Set_User_Authenticated } from './actionTypes';
+import { User_Fetched_Failed, User_Fetched_Success, User_Login_Success, Create_User_Failed, Create_User_Success, User_Loading, User_Logout, Update_User_Success, Update_User_Failed, Updating_User, Set_User_Authenticated, Toggle_Utils_Loading } from './actionTypes';
 import { apiDomain } from '../config'
 import { AsyncStorage } from 'react-native'
 import axios from 'axios'
@@ -10,7 +10,7 @@ export const toggleLoader = () => dispatch => {
     })
 }
 
-export const authenticateUser=()=>dispatch=>{
+export const authenticateUser = () => dispatch => {
     // dispatch({
     //     type:Set_User_Authenticated
     // })
@@ -19,13 +19,22 @@ export const authenticateUser=()=>dispatch=>{
 }
 
 export const logoutUser = (navigation) => async dispatch => {
-    await AsyncStorage.removeItem('token')
-    await AsyncStorage.removeItem("id")
-    // navigation.navigate("Login");
-    
     dispatch({
-        type: User_Logout
+        type: Toggle_Utils_Loading
     })
+    setTimeout(async() => {
+        await AsyncStorage.removeItem('token')
+        await AsyncStorage.removeItem("id")
+        // navigation.navigate("Login");
+
+        dispatch({
+            type: User_Logout
+        })
+    }, 1000);
+    dispatch({
+        type: Toggle_Utils_Loading
+    })
+
 }
 
 
@@ -63,14 +72,14 @@ export const loginUser = (data) => async dispatch => {
 }
 
 
-export const createUser = (data,navigation) => async dispatch => {
+export const createUser = (data, navigation) => async dispatch => {
     try {
-        console.log("Here",data)
+        console.log("Here", data)
         dispatch(toggleLoader())
         let res = await axios.post(`${apiDomain}/User`, data);
         console.log("Success", res.data);
         // await AsyncStorage.setItem("token", res.data.token);
-        
+
         dispatch(toggleLoader())
         dispatch({
             type: Create_User_Success
@@ -142,7 +151,7 @@ export const getAuthenticatedUser = () => async dispatch => {
         dispatch(toggleLoader())
     } catch (error) {
         console.log("Error", error);
-        dispatch(toggleLoader())        
+        dispatch(toggleLoader())
         dispatch({
             type: User_Fetched_Failed
         })
