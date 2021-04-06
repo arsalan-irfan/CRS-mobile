@@ -1,19 +1,44 @@
-import React from 'react'
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Image
+  Image,
 } from "react-native";
 
-import { Card, ListItem, Button, Icon, Header, Avatar } from "react-native-elements";
-import { formatImageString } from '../helper/helper'
+import {
+  Card,
+  ListItem,
+  Button,
+  Icon,
+  Header,
+  Avatar,
+  Rating,
+} from "react-native-elements";
+import { formatImageString } from "../helper/helper";
 
 export const TimelineCard = ({ navigateTo, navigation, data }) => {
+  console.log("rating is", data.agencyRatings);
+  const [agencyRatingAverage, setAgencyRatingAverage] = React.useState(1);
+  useEffect(() => {
+    let agencyRatingSum = 0;
+    let agencyCount = 0;
+    data.agencyRatings.map((rating, id) => {
+      agencyCount++;
+      agencyRatingSum = rating.ratingId + agencyRatingSum;
+    });
+    setAgencyRatingAverage(agencyRatingSum + agencyCount);
+  }, []);
+
+  console.log("agencyRatingAverage:", agencyRatingAverage);
   return (
-    <TouchableOpacity onPress={() => { navigation.navigate(`${navigateTo}`, { data }) }}>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate(`${navigateTo}`, { data });
+      }}
+    >
       <View
         style={{
           flex: 1,
@@ -30,18 +55,16 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
       >
         <View style={{ width: "25%", height: "100%", paddingTop: 10 }}>
           <Image
-
             style={{
               height: 60,
               width: 60,
               borderRadius: 50,
-              marginTop: 10
+              marginTop: 10,
             }}
             source={{
-              uri:
-                formatImageString(data.avatar),
+              uri: formatImageString(data.avatar),
             }}
-          //activeOpacity={0.7}
+            //activeOpacity={0.7}
           />
         </View>
 
@@ -58,22 +81,10 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
           </Text>
           <Text numberOfLines={3}>{data.description}</Text>
         </View>
-        <View
-          style={{ justifyContent: "center", width: "25%", height: "100%" }}
-        >
-          {/* <TouchableOpacity onPress={() => {
-                        this.props.onSelectedTeacher(this.props.teacher.uid)
-                        Actions.teacher_profileSelected()
-                    }}
-                        style={{ justifyContent: "center", alignItems: "center", borderColor: "steelblue", width: "100%", borderWidth: 1, height: "50%" }}>
-                        <Icon
-                            name='md-person'
-                            size={25}
-                            color='steelblue'
-                        />
-                    </TouchableOpacity> */}
-        </View>
+      </View>
+      <View style={{alignSelf: "flex-end"}}>
+        <Rating ratingCount={5} imageSize={30} startingValue={agencyRatingAverage} />
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};

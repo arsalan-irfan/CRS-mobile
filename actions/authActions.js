@@ -39,10 +39,12 @@ export const logoutUser = (navigation) => async dispatch => {
 
 
 export const loginUser = (data) => async dispatch => {
+    console.log(data)
     try {
         dispatch(toggleLoader())
         let res = await axios.put(`${apiDomain}/Login`, data);
-        console.log(res.data)
+        console.log('here!!');
+        console.log(res.data);
         if (res.data.token) {
             await AsyncStorage.setItem("token", res.data.token)
             await AsyncStorage.setItem("id", res.data.user.id.toString())
@@ -56,9 +58,9 @@ export const loginUser = (data) => async dispatch => {
         dispatch(getAuthenticatedUser())
 
     } catch (error) {
-        console.log("Error", error);
+        console.log("Error in catch!", error);
         if (error.response) {
-            console.log("Error", error.response);
+            console.log("Error", error.response.data);
         }
 
         dispatch(toggleLoader())
@@ -218,4 +220,29 @@ export const updateAnalytics = (price) => dispatch => {
         type: Update_Analytics,
         payload: price
     })
+}
+
+//To be Done-----
+export const setUserRating = (rating ) => dispatch => {
+    // try {
+
+    //     let token = await AsyncStorage.getItem('token')
+    //     const config = {
+    //         headers: {
+    //             "Authorization": token,
+    //         },
+    //     };
+    //     let res = await axios.put(`${apiDomain}/users/update/dp`, data, config);
+    //     dispatch({
+    //         type: Update_User_Success,
+    //         payload: res.data.user
+    //     })
+    //     dispatch(showSnackbar("Profile picture Updated Successfully"));
+    // } catch (error) {
+    //     console.log("Error", error.response);
+    //     dispatch(showSnackbar("Error while updating profile picture"));
+    //     dispatch({
+    //         type: Update_User_Failed,
+    //     })
+    // }
 }
