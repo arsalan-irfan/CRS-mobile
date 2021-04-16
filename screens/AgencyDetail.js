@@ -20,10 +20,9 @@ import {
   AirbnbRating,
 } from "react-native-elements";
 import { setUserRating } from "../actions/authActions";
-import {connect} from 'react-redux'
+import { connect } from "react-redux";
 import { formatImageString } from "../helper/helper";
-import Snackbar from '../Components/Snackbar'
-
+import Snackbar from "../Components/Snackbar";
 
 const AgencyDetail = ({ navigation, route, user, setUserRating }) => {
   const [text, onChangeText] = React.useState("");
@@ -36,7 +35,7 @@ const AgencyDetail = ({ navigation, route, user, setUserRating }) => {
   }, [route.params]);
   const ratingCompleted = (rating) => {
     console.log("Rating is: " + rating);
-    setRatingCounted(rating)
+    setRatingCounted(rating);
   };
 
   return (
@@ -145,26 +144,34 @@ const AgencyDetail = ({ navigation, route, user, setUserRating }) => {
               />
               <Rating
                 // fractions="{1}"
-                // startingValue="{3.3}"
+                startingValue={ratingCounted}
                 showRating
                 onFinishRating={ratingCompleted}
               />
-               <Button
-            buttonStyle={{
-              marginTop: 20,
-              width: width / 3,
-              marginLeft: width / 4,
-              marginBottom: 30,
-            }}
-            onPress={() => {
-              //console.log(agencyData, '\n user:', user)
-              console.log('pressed!')
-              
-              setUserRating(agencyData.id,1, ratingCounted, user.id, user.middleName, text)
-             
-            }}
-            title="Submit Rating"
-          />
+              <Button
+                buttonStyle={{
+                  marginTop: 20,
+                  width: width / 3,
+                  marginLeft: width / 4,
+                  marginBottom: 30,
+                }}
+                onPress={() => {
+                  //console.log(agencyData, '\n user:', user)
+                  console.log("pressed!");
+
+                  setUserRating(
+                    agencyData.id,
+                    1,
+                    ratingCounted,
+                    user.id,
+                    user.middleName,
+                    text
+                  );
+                  setRatingCounted(2);
+                  onChangeText("");
+                }}
+                title="Submit Rating"
+              />
             </View>
           </Card>
 
@@ -195,11 +202,8 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.authReducer.user,
- 
-})
+});
 
-
-export default connect(mapStateToProps, {  setUserRating })(AgencyDetail);
+export default connect(mapStateToProps, { setUserRating })(AgencyDetail);

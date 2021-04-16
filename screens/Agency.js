@@ -15,74 +15,40 @@ import axios from "axios";
 import { apiDomain } from "../config";
 
 export const Agency = ({ navigation }) => {
- // console.log("components has rerendered");
-  const [selectedValue, setSelectedValue] = useState("java");
+  // console.log("components has rerendered");
+  const [selectedValue, setSelectedValue] = useState("all");
   const [search, setSearch] = React.useState("");
   const [agencies, setAgencies] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [agenciesFiltered, setAgenciesFiltered] = React.useState([]);
 
   useEffect(() => {
-    console.log('useEffect called')
+    //console.log("useEffect called");
     const unsubscribe = navigation.addListener("focus", () => {
       fetchAgencies();
     });
     return unsubscribe;
-  }, [fetchAgencies, navigation, agenciesFiltered]);
-
-
-
-
-const calculateAverageRating = () => {
-   let a=[];
-    console.log('agenciesFiltered:',agenciesFiltered);
-    agencies.map((agency, id) => {
-      let agencyRatingSum = 0;
-      let agencyCount = 0;
-      let agencyRatingAverage;
-      console.log('agency average calculation called')
-        agency.agencyRatings.map((rating, id)=> {
-        agencyCount++;
-        agencyRatingSum = rating.ratingStars + agencyRatingSum;
-      })
-     agencyRatingAverage = agencyRatingSum / agencyCount;
-     agency.agencyRatingAverage = agencyRatingAverage;
-     console.log("rating average;", agencyRatingSum, agencyCount);
-  
-     // setAgencyRatingAverage(agencyRatingSum / agencyCount);
-      console.log("\nagency rating averagE:", agency.agencyRatingAverage);
-      a.push(agency);
-
-
-    });
-    setAgencies(a);
-  }
-
-
-
+  }, [fetchAgencies, navigation]);
 
   const fetchAgencies = async () => {
     try {
-      console.log('fetch agencies called')
+      //  console.log("fetch agencies called");
       setIsLoading(true);
       const response = await axios.get(`${apiDomain}/Agency`);
       let res = response.data;
-      console.log('agency  data', res)
-      setAgencies(res);
-      calculateAverageRating();
-      
-      setAgenciesFiltered(agencies);
+      //console.log("agency  data", res);
+      //setAgencies(res);
+      calculateAverageRating(res);
 
-      
-    //console.log('rating average added agencies filtered', agenciesFiltered);
+      //  setAgenciesFiltered(agencies);
+
+      //console.log('rating average added agencies filtered', agenciesFiltered);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.log(error.message);
     }
   };
-
-
 
   const onSearch = (text) => {
     setSearch(text);
@@ -96,21 +62,41 @@ const calculateAverageRating = () => {
     }
   };
 
-
-
   const filterbyStars = (star) => {
-    console.log('filter by stars called')
+    // console.log("filter by stars called");
     const temp = agencies.filter((obj) => {
-      
-      
-      return obj.agencyRatingAverage == star || (obj.agencyRatingAverage < star && obj.agencyRatingAverage > star-1);
+      return (
+        obj.agencyRatingAverage == star ||
+        (obj.agencyRatingAverage < star && obj.agencyRatingAverage > star - 1)
+      );
     });
-  
+
     setAgenciesFiltered(temp);
-    }
+  };
 
+  const calculateAverageRating = (res) => {
+    let a = [];
+    //  console.log("agenciesFiltered:", agencies);
+    res.map((agency, id) => {
+      let agencyRatingSum = 0;
+      let agencyCount = 0;
+      let agencyRatingAverage;
+      //  console.log("agency average calculation called");
+      agency.agencyRatings.map((rating, id) => {
+        agencyCount++;
+        agencyRatingSum = rating.ratingStars + agencyRatingSum;
+      });
+      agencyRatingAverage = agencyRatingSum / agencyCount;
+      agency.agencyRatingAverage = agencyRatingAverage;
+      //console.log("rating average;", agencyRatingSum, agencyCount);
 
-
+      // setAgencyRatingAverage(agencyRatingSum / agencyCount);
+      //console.log("\nagency rating averagE:", agency.agencyRatingAverage);
+      a.push(agency);
+    });
+    setAgencies(a);
+    setAgenciesFiltered(a);
+  };
 
   return (
     <View>
@@ -138,25 +124,20 @@ const calculateAverageRating = () => {
         autoCorrect={false}
         value={search}
       />
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end'}}>
+      <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
         <Text h4 style={styles.filterStyle}>
           Filter by Stars
         </Text>
         <Picker
           selectedValue={selectedValue}
-          style={{ height: 30, width: 100,marginLeft: '30%' }}
+          style={{ height: 30, width: 100, marginLeft: "30%" }}
           onValueChange={(itemValue, itemIndex) => {
-            
-            setSelectedValue(itemValue)
-            if(itemValue== 'all'){
+            setSelectedValue(itemValue);
+            if (itemValue == "all") {
               setAgenciesFiltered(agencies);
+            } else {
+              filterbyStars(itemValue);
             }
-           else{
-           filterbyStars(itemValue)
-           }
-          }}
-          onClick={()=> {
-            console.log('picker has been pressed')
           }}
         >
           <Picker.Item label="1" value="1" />
@@ -181,8 +162,8 @@ const calculateAverageRating = () => {
       ) : (
         <View>
           {agenciesFiltered.map((obj, index) => {
-            console.log("timelinecard is calASdasdling", obj);
-            
+            //console.log("timelinecard is calASdasdling", obj);
+
             return (
               <TimelineCard
                 data={obj}

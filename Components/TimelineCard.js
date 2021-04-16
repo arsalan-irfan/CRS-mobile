@@ -20,14 +20,13 @@ import {
 import { formatImageString } from "../helper/helper";
 
 export const TimelineCard = ({ navigateTo, navigation, data }) => {
-  
   const [agencyRatingAverage, setAgencyRatingAverage] = useState(3);
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate(`${navigateTo}`, { data });
       }}
-       style={{ backgroundColor: "white" }}
+      style={{ backgroundColor: "white" }}
     >
       <View
         style={{
@@ -72,16 +71,14 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
           <Text numberOfLines={3}>{data.description}</Text>
         </View>
       </View>
-      <View 
-     style={{ alignSelf: "flex-end" }}
-      >
+      <View style={{ alignSelf: "flex-end" }}>
         <Rating
-        //ratingCount={5}
+          //ratingCount={5}
+          readonly
           imageSize={30}
           startingValue={data.agencyRatingAverage}
-        //tintColor={"white"}
+          //tintColor={"white"}
         />
-        
       </View>
     </TouchableOpacity>
   );
