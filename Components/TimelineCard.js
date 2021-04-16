@@ -76,7 +76,9 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
           //ratingCount={5}
           readonly
           imageSize={30}
-          startingValue={data.agencyRatingAverage}
+          startingValue={
+            isNaN(data.agencyRatingAverage) ? "2" : data.agencyRatingAverage
+          }
           //tintColor={"white"}
         />
       </View>

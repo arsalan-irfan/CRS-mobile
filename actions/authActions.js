@@ -218,6 +218,8 @@ export const updateAnalytics = (price) => (dispatch) => {
 };
 
 //To be Done-----
+
+
 export const setUserRating = (
   agencyId,
   ratingId,
@@ -259,3 +261,50 @@ export const setUserRating = (
     // });
   }
 };
+
+
+//set Vendor Rating
+
+export const setVendorRating = (
+  vendorId,
+  ratingId,
+  ratingStars,
+  clientId,
+  name,
+  description
+) => async (dispatch) => {
+  try {
+    console.log("ser user eraing");
+    console.log(vendorId, ratingId, ratingStars, clientId, name, description);
+    let token = await AsyncStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    const data = {
+      vendorId,
+      ratingId,
+      ratingStars,
+      clientId,
+      name,
+      description,
+    };
+    let res = await axios.post(`${apiDomain}/VendorRatings`, data, config);
+    console.log('the result is:', res.data)
+    dispatch(showSnackbar("Rating has been added successfully"));
+    // dispatch({
+    //   type: Update_User_Success,
+    //   payload: res.data.user,
+    // });
+    // dispatch(showSnackbar("Profile picture Updated Successfully"));
+  } catch (error) {
+    console.log("Error", error.response);
+    dispatch(showSnackbar("Error while updating rating"));
+    // dispatch({
+    //   type: Update_User_Failed,
+    // });
+  }
+};
+
+
