@@ -223,6 +223,7 @@ const Products = ({
         />
         <Rating
           // fractions="{1}"
+          style={{ marginBottom: 10 }}
           startingValue={ratingCounted}
           showRating
           onFinishRating={ratingCompleted}
