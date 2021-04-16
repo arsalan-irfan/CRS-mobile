@@ -19,9 +19,14 @@ import {
   Rating,
   AirbnbRating,
 } from "react-native-elements";
+import { setUserRating } from "../actions/authActions";
+import {connect} from 'react-redux'
 import { formatImageString } from "../helper/helper";
+import Snackbar from '../Components/Snackbar'
 
-export const AgencyDetail = ({ navigation, route }) => {
+
+const AgencyDetail = ({ navigation, route, user, setUserRating }) => {
+  const [text, onChangeText] = React.useState("");
   const [agencyData, setAgencyData] = React.useState({});
   const [ratingCounted, setRatingCounted] = React.useState(2);
   const { width } = Dimensions.get("screen");
@@ -31,10 +36,12 @@ export const AgencyDetail = ({ navigation, route }) => {
   }, [route.params]);
   const ratingCompleted = (rating) => {
     console.log("Rating is: " + rating);
+    setRatingCounted(rating)
   };
 
   return (
     <ScrollView contentContainerStyle={{}}>
+      <Snackbar />
       <Header
         // backgroundColor={"black"}
         // containerStyle={{ height: "10%" }}
@@ -126,14 +133,38 @@ export const AgencyDetail = ({ navigation, route }) => {
                 }
               }
             >
-              <Text>Rating go here</Text>
-
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  marginTop: 5,
+                  marginBottom: 10,
+                }}
+                onChangeText={onChangeText}
+                value={text}
+                placeholder="Description"
+              />
               <Rating
                 // fractions="{1}"
                 // startingValue="{3.3}"
                 showRating
                 onFinishRating={ratingCompleted}
               />
+               <Button
+            buttonStyle={{
+              marginTop: 20,
+              width: width / 3,
+              marginLeft: width / 4,
+              marginBottom: 30,
+            }}
+            onPress={() => {
+              //console.log(agencyData, '\n user:', user)
+              console.log('pressed!')
+              
+              setUserRating(agencyData.id,1, ratingCounted, user.id, user.middleName, text)
+             
+            }}
+            title="Submit Rating"
+          />
             </View>
           </Card>
 
@@ -156,3 +187,19 @@ export const AgencyDetail = ({ navigation, route }) => {
     </ScrollView>
   );
 };
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+  },
+});
+
+
+const mapStateToProps = state => ({
+  user: state.authReducer.user,
+ 
+})
+
+
+export default connect(mapStateToProps, {  setUserRating })(AgencyDetail);

@@ -15,7 +15,7 @@ import { ProductMaker } from "./ProductMaker";
 import Products from "./Products";
 import ProductDescription from "./ProductDescription";
 import Checkout from "./Checkout";
-import { AgencyDetail } from "./AgencyDetail";
+import  AgencyDetail  from "./AgencyDetail";
 import { HomeDetail } from "./HomeDetail";
 import { AgencyList } from "./AgencyList";
 import JobDetail from './JobDetail'

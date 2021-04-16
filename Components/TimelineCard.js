@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,24 +20,14 @@ import {
 import { formatImageString } from "../helper/helper";
 
 export const TimelineCard = ({ navigateTo, navigation, data }) => {
-  console.log("rating is", data.agencyRatings);
-  const [agencyRatingAverage, setAgencyRatingAverage] = React.useState(1);
-  useEffect(() => {
-    let agencyRatingSum = 0;
-    let agencyCount = 0;
-    data.agencyRatings.map((rating, id) => {
-      agencyCount++;
-      agencyRatingSum = rating.ratingId + agencyRatingSum;
-    });
-    setAgencyRatingAverage(agencyRatingSum + agencyCount);
-  }, []);
-
-  console.log("agencyRatingAverage:", agencyRatingAverage);
+  
+  const [agencyRatingAverage, setAgencyRatingAverage] = useState(3);
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate(`${navigateTo}`, { data });
       }}
+       style={{ backgroundColor: "white" }}
     >
       <View
         style={{
@@ -45,7 +35,7 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
           flexDirection: "row",
           width: "100%",
           height: 100,
-          backgroundColor: "#e3e3ed",
+          // backgroundColor: "black",
           borderColor: "grey",
           borderWidth: 1,
           marginBottom: 100,
@@ -82,8 +72,16 @@ export const TimelineCard = ({ navigateTo, navigation, data }) => {
           <Text numberOfLines={3}>{data.description}</Text>
         </View>
       </View>
-      <View style={{alignSelf: "flex-end"}}>
-        <Rating ratingCount={5} imageSize={30} startingValue={agencyRatingAverage} />
+      <View 
+     style={{ alignSelf: "flex-end" }}
+      >
+        <Rating
+        //ratingCount={5}
+          imageSize={30}
+          startingValue={data.agencyRatingAverage}
+        //tintColor={"white"}
+        />
+        
       </View>
     </TouchableOpacity>
   );
