@@ -125,12 +125,10 @@ export const Agency = ({ navigation }) => {
         value={search}
       />
       <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-        <Text h4 style={styles.filterStyle}>
-          Filter by Stars
-        </Text>
+        <Text style={styles.filterStyle}>Filter</Text>
         <Picker
           selectedValue={selectedValue}
-          style={{ height: 30, width: 100, marginLeft: "30%" }}
+          style={{ height: 30, width: "40%", marginLeft: "50%" }}
           onValueChange={(itemValue, itemIndex) => {
             setSelectedValue(itemValue);
             if (itemValue == "all") {
@@ -139,13 +137,14 @@ export const Agency = ({ navigation }) => {
               filterbyStars(itemValue);
             }
           }}
+          mode={"dropdown"}
         >
-          <Picker.Item label="1" value="1" />
-          <Picker.Item label="2" value="2" />
-          <Picker.Item label="3" value="3" />
-          <Picker.Item label="4" value="4" />
-          <Picker.Item label="5" value="5" />
-          <Picker.Item label="all" value="all" />
+          <Picker.Item label="1 and down" value="1" />
+          <Picker.Item label="2 and down" value="2" />
+          <Picker.Item label="3 and down" value="3" />
+          <Picker.Item label="4 and down" value="4" />
+          <Picker.Item label="5 and down" value="5" />
+          <Picker.Item label="Select all" value="all" />
         </Picker>
       </View>
       {isLoading ? (
@@ -186,5 +185,7 @@ const styles = StyleSheet.create({
   },
   filterStyle: {
     marginLeft: 10,
+    fontSize: 18,
+    marginBottom: 5,
   },
 });

@@ -17,6 +17,7 @@ export const VendorCard = ({ image, navigation, navigateTo, data }) => {
         navigation.navigate(`${navigateTo}`, {
           vendorId: data.id,
           company: `${data.firstName} ${data.lastName}`,
+          vendorRatingAverage: data.vendorRatingAverage
         });
       }}
       style={{

@@ -144,8 +144,8 @@ const AgencyDetail = ({ navigation, route, user, setUserRating }) => {
               />
               <Rating
                 // fractions="{1}"
-                startingValue={ratingCounted}
-                showRating
+                startingValue={agencyData.agencyRatingAverage}
+               // showRating
                 onFinishRating={ratingCompleted}
               />
               <Button

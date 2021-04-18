@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   BackHandler,
   TextInput,
   Button,
+  Picker,
   Dimensions,
 } from "react-native";
 
@@ -33,7 +34,9 @@ const Products = ({
   user,
 }) => {
   const [search, setSearch] = React.useState("");
-  const { vendorId, company } = route.params;
+
+  const [selectedValue, setSelectedValue] = useState("random");
+  const { vendorId, company, vendorRatingAverage } = route.params;
   const [products, setProducts] = React.useState([]);
   const [productsFiltered, setProductsFiltered] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -86,6 +89,7 @@ const Products = ({
     if (index == -1) return false;
     else return true;
   };
+
   const onSearch = (text) => {
     setSearch(text);
     if (text.length !== 0) {
@@ -95,6 +99,34 @@ const Products = ({
       setProductsFiltered(temp);
     } else {
       setProductsFiltered(products);
+    }
+  };
+
+  const sortProducts = (products, price) => {
+    console.log("sorting!!!!", products);
+    if (price == "low") {
+      products.sort((a, b) =>
+        a.productPriceAffections[1].price > b.productPriceAffections[1].price
+          ? 1
+          : b.productPriceAffections[1].price >
+            a.productPriceAffections[1].price
+          ? -1
+          : 0
+      );
+      console.log("products filtered are:", products);
+    }
+    if (price == "high") {
+      console.log("from high to low");
+      products.sort((a, b) =>
+        a.productPriceAffections[a.productPriceAffections.length - 1 ].price < b.productPriceAffections[b.productPriceAffections.length - 1].price
+          ? 1
+          : b.productPriceAffections[b.productPriceAffections.length - 1].price <
+            a.productPriceAffections[a.productPriceAffections.length - 1].price
+          ? -1
+          : 0
+      );
+      setProductsFiltered(products)
+      console.log("products filtered are:", products);
     }
   };
 
@@ -109,6 +141,7 @@ const Products = ({
       setIsLoading(false);
       setProducts(temp);
       setProductsFiltered(temp);
+      // sortProducts(products);
     } catch (error) {
       setIsLoading(false);
       console.log(error.message);
@@ -173,6 +206,30 @@ const Products = ({
         autoCorrect={false}
         value={search}
       />
+      <View
+        style={{
+          flexDirection: "row",
+          borderBottomWidth: 2,
+          borderTopWidth: 2,
+        }}
+      >
+        <Text style={styles.filterStyle}>Sort by Price</Text>
+        <Picker
+          selectedValue={selectedValue}
+          style={{ height: 30, width: "42%", marginLeft: "30%" }}
+          onValueChange={(itemValue, itemIndex) => {
+            setSelectedValue(itemValue);
+            console.log("value changed");
+            sortProducts(productsFiltered, itemValue);
+          }}
+          mode={"dropdown"}
+        >
+          <Picker.Item label="Low to High" value="low" />
+          <Picker.Item label="High to Low" value="high" />
+          <Picker.Item label="random" value="random" />
+        </Picker>
+      </View>
+
       {isLoading ? (
         <View
           style={{
@@ -224,8 +281,8 @@ const Products = ({
         <Rating
           // fractions="{1}"
           style={{ marginBottom: 10 }}
-          startingValue={ratingCounted}
-          showRating
+          startingValue={vendorRatingAverage}
+          //showRating
           onFinishRating={ratingCompleted}
         />
         <Button
@@ -264,6 +321,11 @@ const styles = StyleSheet.create({
     color: "black",
     //fontFamily: 'Roboto-Bold',
     fontSize: 20,
+  },
+  filterStyle: {
+    marginLeft: 10,
+    fontSize: 18,
+    marginBottom: 5,
   },
 });
 
