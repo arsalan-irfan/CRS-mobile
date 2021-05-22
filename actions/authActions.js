@@ -41,8 +41,9 @@ export const logoutUser = (navigation) => async dispatch => {
 export const loginUser = (data) => async dispatch => {
     try {
         dispatch(toggleLoader())
+        console.log(data)
         let res = await axios.put(`${apiDomain}/Login`, data);
-        console.log(res.data)
+        console.log('resdata is:',res.data)
         if (res.data.token) {
             await AsyncStorage.setItem("token", res.data.token)
             await AsyncStorage.setItem("id", res.data.user.id.toString())
@@ -56,9 +57,9 @@ export const loginUser = (data) => async dispatch => {
         dispatch(getAuthenticatedUser())
 
     } catch (error) {
-        console.log("Error", error);
+       // console.log("Error", error);
         if (error.response) {
-            console.log("Error", error.response);
+            console.log("Error", error.response.message);
         }
 
         dispatch(toggleLoader())
